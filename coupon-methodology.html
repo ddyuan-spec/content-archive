@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>用一套 AI 工作流，我把 22 条优惠券需求从混乱管到了顺</title>
+<style>
+  :root {
+    --ink: #2b2b2b;
+    --muted: #888;
+    --accent: #d32f2f;
+    --bg: #ffffff;
+    --card-bg: #fafafa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    font-size: 16.5px;
+    line-height: 1.85;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 28px 20px 64px;
+  }
+  /* ===== 标题系统 ===== */
+  h1 {
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: 0.2px;
+    margin-bottom: 6px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 38px 0 14px;
+    padding-left: 14px;
+    border-left: 4px solid var(--accent);
+    line-height: 1.4;
+  }
+  h2:first-of-type { margin-top: 20px; }
+  p { margin: 1.1em 0; }
+  b, strong { color: var(--ink); font-weight: 600; }
+  .hl { color: var(--accent); font-weight: 600; }
+
+  /* ===== 价值卡片（开头） ===== */
+  .value-card {
+    background: linear-gradient(135deg, #fff7f7 0%, #fff 100%);
+    border: 1px solid #f1e3e3;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #555;
+  }
+  .value-card b { color: var(--accent); }
+
+  /* ===== 配图卡片 ===== */
+  figure.diagram {
+    margin: 28px 0;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+  figure.diagram .fig-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 15px;
+    background: linear-gradient(90deg, #fff5f5 0%, #fff 70%);
+    border-bottom: 1px solid #f1f1f1;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  figure.diagram .fig-head .tag {
+    background: var(--accent);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  figure.diagram .fig-body { padding: 18px 12px; overflow-x: auto; }
+  .flow { text-align: center; line-height: 2.4; font-size: 12.5px; margin: 8px 0; }
+  .fnode {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1.5px solid #e04b4b;
+    border-radius: 7px;
+    background: #fff;
+    color: #2b2b2b;
+    padding: 6px 10px;
+    line-height: 1.35;
+    text-align: center;
+    margin: 3px 0;
+  }
+  .fnode.solid { background: #e04b4b; color: #fff; font-weight: 600; }
+  .farrow {
+    display: inline-block; vertical-align: middle;
+    color: #e04b4b; font-weight: 700; font-size: 14px; margin: 0 2px;
+  }
+  .fbranch { font-size: 11.5px; color: #aaa; text-align: center; margin: 5px 0 2px; }
+  figure.diagram figcaption {
+    padding: 0 15px 14px;
+    font-size: 12.5px; color: var(--muted); line-height: 1.55;
+  }
+
+  /* 图3 截图画廊 */
+  .fig-gallery { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; }
+  .gallery-item { display: flex; flex-direction: column; gap: 6px; }
+  .gallery-item img {
+    width: 100%; border-radius: 8px;
+    border: 1px solid #e8e8e8;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.05); display: block;
+  }
+  .gallery-caption { font-size: 12.5px; color: var(--muted); line-height: 1.55; padding-left: 3px; }
+
+  /* 头图 */
+  .hero {
+    margin: -28px -20px 24px;
+    height: 180px;
+    background: linear-gradient(135deg, #d32f2f 0%, #9e1b1b 100%);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 0 24px;
+  }
+  .hero span { color: rgba(255,255,255,0.9); font-size: 13.5px; line-height: 1.65; letter-spacing: 0.3px; }
+
+  /* 尾图 */
+  .endcard {
+    margin-top: 40px; padding: 22px 18px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #fff7f7 0%, #fff 100%);
+    border: 1px solid #f1e3e3;
+  }
+  .endcard-follow { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .endcard .qr {
+    width: 72px; height: 72px; flex: 0 0 72px;
+    border-radius: 8px; border: 1px dashed #d9b3b3;
+    overflow: hidden;
+  }
+  .endcard .qr img { width: 100%; height: 100%; display: block; border-radius: 8px; }
+  .follow-title { font-weight: 700; font-size: 15px; color: var(--ink); }
+  .follow-sub { font-size: 12.5px; color: var(--muted); margin-top: 4px; line-height: 1.55; }
+  .endcard-cta { font-size: 14px; line-height: 1.8; color: var(--ink); margin: 0 0 10px; }
+  .endcard-cta b { color: var(--accent); }
+  .endcard-sign { font-size: 12.5px; color: var(--muted); text-align: right; margin: 0; }
+
+  /* 要点列表 */
+  .key-points {
+    background: var(--card-bg); border-radius: 10px;
+    padding: 16px 18px; margin: 20px 0;
+    font-size: 14.5px; line-height: 1.75;
+  }
+  .key-points li { margin: 6px 0; padding-left: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 头图 -->
+  <div class="hero" role="img" aria-label="头图">
+    <span>管了三周、改了二十多个版本、转飞五十多张图<br>我终于把这套流程立住了</span>
+  </div>
+
+  <h1>用一套 AI 工作流，我把 22 条优惠券需求从混乱管到了顺</h1>
+  <div class="sub">一个产品经理的真实复盘 · 适合所有用 AI 协作写文档的人</div>
+
+  <!-- 价值前置：回答"干啥用的" -->
+  <div class="value-card">
+    🎯 <b>这篇适合谁看：</b>正在用 AI 写 PRD / 需求文档 / 技术文档，但经常遇到<b>多人并行改冲突、版本乱、合错文件</b>的人。<br><br>
+    📦 <b>你能得到：</b>一套我从 22 条需求踩坑里跑出来的工作流——<b>隔离草稿 + 红黑规则 + 冲突检测 + 推送分离</b>，直接能抄。
+  </div>
+
+  <!-- ========== 第一章：混乱 ========== -->
+  <h2>一、先说说有多乱</h2>
+
+  <p>周五下午项目群炸了。两个人前后脚改了同一个字段，后合的那个把前面的改动整块盖掉了。<b>当月第三次。</b></p>
+
+  <p>我手头管着一套优惠券系统，研发甩过来二十多条需求，每条都要落 PRD、对原型。那不是一份文档，是一堆永远合不拢的活儿。</p>
+
+  <p>从七月中到八月初，<b>断断续续改了三周多</b>。几乎每天都在改，周末也改。有几次一个人对着文档改到晚上十一点多，屋里就一盏台灯，人已经瘫了，脑子里只剩一个念头：<b>这回周一能准时上。</b>结果周一刚上班，群就炸了。</p>
+
+  <p>几个数字我记到现在：</p>
+  <ul class="key-points">
+    <li><b>八九个并行草稿</b>同时躺在 tasks 目录里，从 R5 到 R17</li>
+    <li><b>二十多个备份版本</b>，PRD 版本号从 V2.0 爬到 V2.2.1</li>
+    <li><b>五十多张图</b>转 Word 全飞了，满屏空白框</li>
+    <li>C 端原型从 <b>v1.0 重画到 v1.9</b>，至少四五版推倒重来</li>
+  </ul>
+
+  <p>最崩的一次：我图省事让 AI 直接改主文件，结果幺蛾子炸三个——<span class="hl">红字残留</span>、<span class="hl">互相覆盖</span>、<span class="hl">错误推送上线</span>。</p>
+
+  <!-- ========== 第二章：四步解法 ========== -->
+  <h2>二、我做了哪四件事</h2>
+
+  <p>痛定思痛，我一步步把流程重构了。不是一次性想清楚的，是每翻一次车改一点，前前后后<b>迭代了四轮</b>。</p>
+
+  <figure class="diagram">
+    <div class="fig-head"><span class="tag">图 1</span>四轮迭代演进</div>
+    <div class="fig-body">
+      <div class="flow">
+        <span class="fnode solid">V1 直接改<br>三连翻车</span><span class="farrow">→</span><span class="fnode">① 隔离草稿<br>+ 红黑规则</span><span class="farrow">→</span><span class="fnode">② 跨任务<br>冲突检测</span><span class="farrow">→</span><span class="fnode">③ 推送分离</span><span class="farrow">→</span><span class="fnode">④ AI 只排查<br>不拍板</span>
+      </div>
+    </div>
+    <figcaption>从「直接改主文件翻车」，到四步把流程立住。</figcaption>
+  </figure>
+
+  <p><b>第一步：隔离草稿 + 红黑规则</b></p>
+  <p>每次来需求，不开主文件，先开一个<b>隔离草稿</b>在本地改。定了一条规则：<b>红字是这次新改的，黑字是原样没动的</b>。一眼扫过去就知道动了哪。</p>
+  <p>以前是八个人在同一块地里刨，现在是每人一小块自留地，刨完再拼。</p>
+
+  <p><b>第二步：跨任务冲突检测</b></p>
+  <p>草稿多了新问题——别人在你不知情时改了同一块，等合的时候才发现。所以我每次动手前先写<b>范围声明</b>，说清这次动哪一章、哪个视图，串行合的时候查重叠。</p>
+  <p>有一条死守的红线：<span class="hl">一发现冲突，找人确认，绝不沉默处置。</span>AI 不替你做谁覆盖谁的决定，必须人来拍。</p>
+
+  <p><b>第三步：推送分离</b></p>
+  <p>合并和发布原来耦合在一起，一合就推，错了连后悔机会都没有。我把它拆开，单独弄个<b>推送队列</b>，本地先攒着，最后按顺序一条条发。发完回读线上确认红字等于零，这趟才算完。</p>
+  <p>顺带治好了转 Word 的毛病——源头干净了，转出来才不歪。很多转 Word 的破事，根子不在转，在源头的 HTML 里混了太多临时标记。</p>
+
+  <p><b>第四步：AI 只排查，不拍板（最重要）</b></p>
+  <p>这是最贵的一课。我加了道<b>产品原则预审</b>，但和自己约法三章：</p>
+  <ul class="key-points">
+    <li>AI 读需求，把觉得不对劲的列成清单报给我</li>
+    <li><b>我来拍板</b>，结论才进 PRD</li>
+    <li>AI 绝不自作主张加戏写进去</li>
+  </ul>
+  <p>有次 AI 自作主张补了一个我觉得没必要的字段，还写了套校验逻辑，看起来特别专业。评审时被研发一句话问住：<b>这字段谁要用？</b>我说不上来，因为不是我要的，是 AI 自己加的。</p>
+  <p>从那以后定了：AI 可以怀疑、可以提问、可以列清单，<b>但笔必须握在人手里</b>。</p>
+
+  <!-- ========== 第三章：现在样子 ========== -->
+  <h2>三、现在长什么样</h2>
+
+  <p>这套流程落地后，我做成了几个专门的 Skill，凑成一套能跑的体系：</p>
+
+  <figure class="diagram">
+    <div class="fig-head"><span class="tag">图 2</span>需求流转状态机</div>
+    <div class="fig-body">
+      <p class="fbranch">极小改动可直接改 PRD（无需隔离草稿）</p>
+      <div class="flow">
+        <span class="fnode">收到需求</span><span class="farrow">→</span><span class="fnode">开隔离草稿<br>tasks/</span><span class="farrow">→</span><span class="fnode">出原型<br>+ PRD 标红</span><span class="farrow">→</span><span class="fnode">人确认</span><span class="farrow">→</span><span class="fnode">合并转黑</span><span class="farrow">→</span><span class="fnode">入推送队列</span><span class="farrow">→</span><span class="fnode">顺序发布</span><span class="farrow">→</span><span class="fnode">回读校验<br>红字=0</span>
+      </div>
+    </div>
+    <figcaption>一个需求从进来到上线的完整链路。</figcaption>
+  </figure>
+
+  <div class="figure-card">
+    <div class="fig-label">图 3 · 真实截图</div>
+    <div class="fig-gallery">
+      <div class="gallery-item">
+        <img src="https://raw.githubusercontent.com/ddyuan-spec/content-archive/master/images/fig3a-red-black-rules.png" alt="红黑规则" loading="lazy">
+        <span class="gallery-caption">① 红黑规则：红色 = 本次新增/修改，黑色 = 原有内容</span>
+      </div>
+      <div class="gallery-item">
+        <img src="https://raw.githubusercontent.com/ddyuan-spec/content-archive/master/images/fig3b-tasks-directory.png" alt="隔离草稿目录" loading="lazy">
+        <span class="gallery-caption">② 隔离草稿：tasks 目录下 14 个并行草稿，每个一个独立需求</span>
+      </div>
+      <div class="gallery-item">
+        <img src="https://raw.githubusercontent.com/ddyuan-spec/content-archive/master/images/fig3c-push-queue.png" alt="推送队列" loading="lazy">
+        <span class="gallery-caption">③ 推送队列：push-queue.json 记录每条任务的状态</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 第四章：总结 ========== -->
+  <h2>四、几点掏心窝的话</h2>
+
+  <p><b>设计 Skill 和设计产品，没本质区别。</b>都得定红线、划边界、画状态机、想异常。你给 AI 写的流程，和给研发写的 PRD，底层是一回事：<b>把模糊的意图变成确定的、可执行的、出错能兜住的规矩。</b></p>
+
+  <p>别再问 AI 会不会取代产品经理了，先想想你有没有把流程设计清楚。流程不清楚，AI 再强也是个<b>乱出拳的壮汉</b>。</p>
+
+  <p>回到开头那个周五的群消息。现在它还会响吗？会。但响的时候，我知道去哪看、谁在改、该找谁确认。<b>那个深夜十一点合完周一又炸的画面，没再出现过。</b>不是因为 AI 变聪明了，是因为我把规矩立住了。</p>
+
+  <p>如果你也在管那种会并行改的文档，先别急着上 AI，先把三件事想清楚：<b>隔离、红线、还有谁拍板。</b></p>
+
+  <p>以上是不成熟的经验，不一定对，但确实是踩出来的。如果早一点想明白，我至少能少熬三四个夜。写这篇不是为了显得多厉害，是想告诉同样在泥里刨的人——<b>坑是可以绕的，只是得有人先踩过、再指给你看。</b></p>
+
+  <!-- 尾图 -->
+  <div class="endcard">
+    <div class="endcard-follow">
+      <div class="qr"><img src="https://raw.githubusercontent.com/ddyuan-spec/content-archive/master/images/qr-code.jpg" alt="公众号二维码"></div>
+      <div class="follow-text">
+        <div class="follow-title">关注我，看更多产品踩坑复盘</div>
+        <div class="follow-sub">点击下方名片，第一时间收到下一篇</div>
+      </div>
+    </div>
+    <p class="endcard-cta">觉得有用，点个 <b>「在看」</b> 让更多人看到 ☕</p>
+    <p class="endcard-sign">一个在泥里刨过、想把坑指给你看的产品经理</p>
+  </div>
+
+</div>
+</body>
+</html>
