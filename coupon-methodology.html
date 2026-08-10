@@ -134,12 +134,14 @@
   /* 头图 */
   .hero {
     margin: -28px -20px 24px;
-    height: 180px;
-    background: linear-gradient(135deg, #d32f2f 0%, #9e1b1b 100%);
-    display: flex; align-items: center; justify-content: center;
-    text-align: center; padding: 0 24px;
+    overflow: hidden;
+    line-height: 0;
   }
-  .hero span { color: rgba(255,255,255,0.9); font-size: 13.5px; line-height: 1.65; letter-spacing: 0.3px; }
+  .hero img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
 
   /* 尾图 */
   .endcard {
@@ -175,7 +177,7 @@
 
   <!-- 头图 -->
   <div class="hero" role="img" aria-label="头图">
-    <span>管了三周、改了二十多个版本、转飞五十多张图<br>我终于把这套流程立住了</span>
+    <img src="https://ddyuan-spec.github.io/content-archive/images/cover_900x383.png" alt="从混乱到有序：AI工作流封面">
   </div>
 
   <h1>用一套 AI 工作流，我把 22 条优惠券需求从混乱管到了顺</h1>
