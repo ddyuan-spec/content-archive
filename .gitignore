@@ -1,0 +1,11 @@
+# 脚本与中间产物
+inline_convert.py
+*.pyc
+__pycache__/
+
+# AI 生图原始大图（只保留裁切后的封面）
+A_flat_vector_comic_illustrati_*.png
+
+# 草稿/中间版本（保留最终版）
+*草稿.md
+*_大纲.md
