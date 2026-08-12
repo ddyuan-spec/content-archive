@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>贴图版 · 用一套 AI 工作流，我把 22 条优惠券需求从混乱管到了顺</title>
+<style>
+  /* ===== 贴图版：仿飞书知识库文档截图风 ===== */
+  :root {
+    --frame-blue: #4A90D9;
+    --frame-blue-light: #E8F0FA;
+    --accent-red: #D32F2F;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --bg: #F5F6F8;
+    --card-bg: #fff;
+    --sidebar-bg: #FAFBFC;
+    --nav-text: #374151;
+    --highlight-yellow: #FFF3CD;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #e8eaed;
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    padding: 20px 0 60px;
+  }
+
+  /* ===== 每张卡片 = 一页文档截图 ===== */
+  .card {
+    width: 720px;
+    margin: 0 auto 24px;
+    background: var(--bg);
+    border: 6px solid var(--frame-blue);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  .card-inner {
+    display: flex;
+    min-height: 480px;
+  }
+
+  /* ===== 左侧目录栏 ===== */
+  .sidebar {
+    width: 210px;
+    min-width: 210px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid #E5E7EB;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+  }
+  .sb-header { display: flex; align-items: center; gap: 6px; color: var(--nav-text); font-weight: 600; font-size: 13px; margin-bottom: 14px; }
+  .sb-header svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .kb-name {
+    display: flex; align-items: center; gap: 8px;
+    background: #EFF6FF; border: 1px solid #BFDBFE;
+    border-radius: 8px; padding: 10px 10px; margin-bottom: 12px;
+    font-weight: 600; font-size: 13px; color: #1E40AF;
+  }
+  .kb-icon { width: 28px; height: 28px; background: #3B82F6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+  .kb-badge { font-size: 10px; color: #60A5FA; background: #DBEAFE; padding: 2px 6px; border-radius: 4px; margin-left: auto; }
+  .search-bar {
+    background: #fff; border: 1px solid #D1D5DB; border-radius: 6px;
+    padding: 7px 10px; display: flex; align-items: center; gap: 6px;
+    color: #9CA3AF; font-size: 12px; margin-bottom: 14px;
+  }
+  .nav-label { font-size: 11px; color: #9CA3AF; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
+  .nav-tree { flex: 1; overflow: hidden; }
+  .nav-item {
+    display: flex; align-items: center; gap: 6px; padding: 5px 6px;
+    border-radius: 5px; font-size: 12.5px; color: var(--nav-text);
+    cursor: default; transition: background 0.15s;
+  }
+  .nav-item:hover { background: #F3F4F6; }
+  .nav-item.active { background: #DBEAFE; color: #1E40AF; font-weight: 600; }
+  .nav-item .ni-icon { width: 16px; height: 16px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; flex-shrink: 0; font-weight: 700; }
+  .nav-item .ni-doc { width: 14px; height: 14px; border: 1.5px solid #D1D5DB; border-radius: 2px; flex-shrink: 0; }
+  .nav-sub { padding-left: 18px; }
+  .nav-sub .nav-item { font-size: 12px; color: #4B5563; }
+  .nav-sub .nav-item.active { color: #1E40AF; background: #EFF6FF; }
+  .mascot { margin-top: auto; text-align: center; opacity: 0.7; }
+  .mascot-img { width: 64px; height: 64px; }
+
+  /* ===== 右侧正文区 ===== */
+  .main {
+    flex: 1; background: var(--card-bg);
+    padding: 20px 24px 28px;
+    position: relative;
+  }
+  .breadcrumb {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11.5px; color: #9CA3AF; margin-bottom: 8px;
+  }
+  .bc-share {
+    background: #EFF6FF; color: #3B82F6; border: none;
+    padding: 4px 12px; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: default;
+  }
+  .meta-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11.5px; color: #9CA3AF; margin-bottom: 16px;
+  }
+  .author-avatar { width: 22px; height: 22px; border-radius: 50%; background: #FEE2E2; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .tag-ai { background: #F3E8FF; color: #7C3AED; font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
+
+  h1.card-title {
+    font-size: 24px; font-weight: 800; line-height: 1.35;
+    color: var(--ink); margin-bottom: 12px; letter-spacing: 0.3px;
+  }
+  .card-desc {
+    background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px;
+    padding: 12px 14px; font-size: 13px; color: #4B5563; line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  /* 正文排版 */
+  h2 {
+    font-size: 17px; font-weight: 700; color: var(--ink);
+    margin: 24px 0 12px; padding-left: 12px;
+    border-left: 3.5px solid var(--frame-blue);
+    line-height: 1.4;
+  }
+  p { margin: 0.85em 0; color: #333; }
+  b, strong { font-weight: 700; color: var(--ink); }
+  .hl { color: var(--accent-red); font-weight: 700; }
+  .hl-blue { color: #2563EB; font-weight: 700; }
+
+  ul.key-points {
+    list-style: none; padding: 0; margin: 14px 0;
+    background: #FFFBEB; border-left: 3px solid #F59E0B;
+    border-radius: 0 8px 8px 0; padding: 12px 16px;
+  }
+  .key-points li {
+    padding: 4px 0; font-size: 14px; line-height: 1.65; color: #444;
+  }
+  .key-points li::before { content: '▸ '; color: #F59E0B; font-weight: 700; }
+
+  /* 流程图（贴图版：紧凑横向） */
+  .flow-card {
+    background: linear-gradient(135deg, #F0F7FF 0%, #fff 100%);
+    border: 1.5px solid #BFDBFE; border-radius: 10px;
+    padding: 16px 18px; margin: 18px 0;
+  }
+  .flow-title { font-size: 12.5px; font-weight: 700; color: #2563EB; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .flow-title .ft-tag { background: #2563EB; color: #fff; font-size: 10px; padding: 1px 7px; border-radius: 99px; }
+  .flow-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .fs-node {
+    background: #fff; border: 1.5px solid #93C5FD; border-radius: 7px;
+    padding: 7px 11px; font-size: 12px; font-weight: 600; color: #1E40AF;
+    text-align: center; line-height: 1.35; max-width: 130px;
+  }
+  .fs-node.solid { background: #2563EB; color: #fff; border-color: #2563EB; }
+  .fs-arrow { color: #93C5FD; font-weight: 700; font-size: 14px; }
+
+  /* 截图画廊 */
+  .gallery { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+  .gallery-item img { width: 100%; border-radius: 6px; border: 1px solid #E5E7EB; display: block; }
+  .gallery-caption { font-size: 11.5px; color: #9CA3AF; line-height: 1.5; padding-left: 2px; }
+
+  /* 高亮块 */
+  .highlight-block {
+    background: var(--highlight-yellow); border-left: 3.5px solid #F59E0B;
+    border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 14px 0;
+    font-size: 14px; line-height: 1.7; color: #444;
+  }
+
+  /* 引用块 */
+  .quote-block {
+    border-left: 3px solid var(--frame-blue);
+    background: #F8FAFC; border-radius: 0 8px 8px 0;
+    padding: 12px 16px; margin: 14px 0; font-size: 14px;
+    color: #475569; font-style: italic;
+  }
+
+  /* 水印 */
+  .watermark {
+    position: absolute; bottom: 10px; right: 14px;
+    font-size: 10.5px; color: #CBD5E1; z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ===== 卡片0：标题卡（特殊样式） ===== */
+  .card.title-card { min-height: 520px; }
+  .title-card .main { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 40px 36px; }
+  .tc-quote { font-size: 48px; color: #E5E7EB; line-height: 1; margin-bottom: 8px; font-family: Georgia, serif; }
+  .tc-main { font-size: 32px; font-weight: 900; line-height: 1.3; color: var(--ink); margin-bottom: 20px; letter-spacing: 1px; }
+  .tc-mark { background: linear-gradient(180deg, transparent 55%, rgba(211,47,47,0.25) 55%); padding: 0 4px; }
+  .tc-sub { font-size: 15px; color: #6B7280; line-height: 1.6; margin-bottom: 24px; }
+  .tc-meta { display: flex; gap: 12px; font-size: 13px; color: #9CA3AF; }
+  .tc-meta span { background: #F3F4F6; padding: 4px 10px; border-radius: 99px; }
+  .tc-emoji { position: absolute; bottom: 30px; right: 30px; font-size: 48px; }
+
+  /* ===== 卡片N：尾图卡 ===== */
+  .end-card .main { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 28px; }
+  .end-qr-wrap { width: 120px; height: 120px; border-radius: 12px; overflow: hidden; border: 2px dashed #D1D5DB; margin-bottom: 16px; }
+  .end-qr-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .end-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .end-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .end-cta { font-size: 14.5px; color: #374151; line-height: 1.8; margin-bottom: 12px; }
+  .end-sign { font-size: 12px; color: #9CA3AF; }
+
+  /* 分隔提示 */
+  .card-divider {
+    text-align: center; font-size: 11px; color: #9CA3AF;
+    margin: -8px auto 20px; position: relative; z-index: 2;
+  }
+  .card-divider span { background: #e8eaed; padding: 0 12px; }
+
+  @media (max-width: 740px) {
+    .card { width: 100%; border-width: 4px; }
+    .sidebar { display: none; }
+    .card-inner { min-height: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== 卡片0：标题卡 ==================== -->
+<div class="card title-card">
+  <div class="card-inner">
+    <div class="sidebar">
+      <div class="sb-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 飞书云文档</div>
+      <div class="kb-name"><div class="kb-icon">产</div><span>产品经理复盘知识库</span><span class="kb-badge">互联公开</span></div>
+      <div class="search-bar">🔍 搜索</div>
+      <div class="nav-label">目录</div>
+      <div class="nav-tree">
+        <div class="nav-item"><span class="ni-icon" style="background:#10B981;">✓</span> 产品经理 AI 协作方法论</div>
+        <div class="nav-item"><span class="ni-icon" style="background:#F59E0B;">▸</span> 需求管理实战</div>
+        <div class="nav-item active"><span class="ni-icon" style="background:#3B82F6;">📄</span> 优惠券 Skill 方法论复盘</div>
+        <div class="nav-sub">
+          <div class="nav-item"><span class="ni-doc"></span> 混乱现场</div>
+          <div class="nav-item"><span class="ni-doc"></span> 四步解法</div>
+          <div class="nav-item"><span class="ni-doc"></span> 现在的样子</div>
+          <div class="nav-item"><span class="ni-doc"></span> 掏心窝话</div>
+        </div>
+        <div class="nav-item"><span class="ni-icon" style="background:#8B5CF6;">★</span> Skill 设计模式</div>
+      </div>
+      <div class="mascot">🤖</div>
+    </div>
+    <div class="main">
+      <div class="tc-quote">"</div>
+      <div class="tc-main">建议产品经理<br>都用 <span class="tc-mark">AI 工作流</span><br>管需求</div>
+      <div class="tc-sub">管了三周、改了二十多个版本、转飞五十多张图<br>我终于把这套流程立住了</div>
+      <div class="tc-meta">
+        <span>📋 22 条需求</span>
+        <span>🔄 四轮迭代</span>
+        <span>⚡ 可直接抄</span>
+      </div>
+      <div class="tc-emoji">😍</div>
+    </div>
+  </div>
+  <div class="watermark">贴图号·产品袁</div>
+</div>
+
+<div class="card-divider"><span>↓ 向下滑动阅读 ↓</span></div>
+
+
+<!-- ==================== 卡片1：价值前置 ==================== -->
+<div class="card">
+  <div class="card-inner">
+    <div class="sidebar">
+      <div class="sb-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 飞书云文档</div>
+      <div class="kb-name"><div class="kb-icon">产</div><span>产品经理复盘知识库</span></div>
+      <div class="search-bar">🔍 搜索</div>
+      <div class="nav-label">目录</div>
+      <div class="nav-tree">
+        <div class="nav-item"><span class="ni-icon" style="background:#10B981;">✓</span> 产品经理 AI 协作方法论</div>
+        <div class="nav-item"><span class="ni-icon" style="background:#F59E0B;">▸</span> 需求管理实战</div>
+        <div class="nav-item active"><span class="ni-icon" style="background:#3B82F6;">📄</span> 优惠券 Skill 方法论复盘</div>
+        <div class="nav-sub">
+          <div class="nav-item active" style="background:#EFF6FF;"><span class="ni-doc"></span> 这篇适合谁看？</div>
+          <div class="nav-item"><span class="ni-doc"></span> 混乱现场</div>
+          <div class="nav-item"><span class="ni-doc"></span> 四步解法</div>
+          <div class="nav-item"><span class="ni-doc"></span> 掏心窝话</div>
+        </div>
+      </div>
+      <div class="mascot">🤖</div>
+    </div>
+    <div class="main">
+      <div class="breadcrumb"><span>… › 优惠券 Skill 方法论复盘</span><button class="bc-share">分享</button></div>
+      <div class="meta-row"><div class="author-avatar">袁</div><span>袁中天</span><span>·</span><span>2026-08-10 修改</span><span class="tag-ai">✦ AI 速览</span><span class="tag-ai">试用</span></div>
+
+      <h1 class="card-title">这篇适合谁看？你能得到什么？</h1>
+
+      <div class="key-points" style="background:linear-gradient(135deg,#FEF2F2,#fff);border-color:#FECACA;">
+        <li><b>🎯 这篇适合谁看：</b><br>正在用 AI 写 PRD / 需求文档 / 技术文档，但经常遇到<b>多人并行改冲突、版本乱、合错文件</b>的人。</li>
+      </div>
+
+      <div class="key-points" style="background:linear-gradient(135deg,#F0FDF4,#fff);border-color:#BBF7D0;margin-top:12px;">
+        <li><b>📦 你能得到：</b><br>一套从 22 条需求踩坑里跑出来的工作流——<br><b>隔离草稿 + 红黑规则 + 冲突检测 + 推送分离</b><br>直接能抄。</li>
+      </div>
+
+      <p style="margin-top:18px;color:#6B7280;font-size:13px;">💡 不需要懂代码。核心是「定规矩」的思路，跟用什么工具无关。</p>
+    </div>
+  </div>
+  <div class="watermark">贴图号·产品袁</div>
+</div>
+
+
+<!-- ==================== 卡片2：混乱现场 ==================== -->
+<div class="card">
+  <div class="card-inner">
+    <div class="sidebar">
+      <div class="sb-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 飞书云文档</div>
+      <div class="kb-name"><div class="kb-icon">产</div><span>产品经理复盘知识库</span></div>
+      <div class="search-bar">🔍 搜索</div>
+      <div class="nav-label">目录</div>
+      <div class="nav-tree">
+        <div class="nav-item"><span class="ni-icon" style="background:#10B981;">✓</span> 产品经理 AI 协作方法论</div>
+        <div class="nav-item"><span class="ni-icon" style="background:#F59E0B;">▸</span> 需求管理实战</div>
+        <div class="nav-item active"><span class="ni-icon" style="background:#3B82F6;">📄</span> 优惠券 Skill 方法论复盘</div>
+        <div class="nav-sub">
+          <div class="nav-item"><span class="ni-doc"></span> 这篇适合谁看？</div>
+          <div class="nav-item active" style="background:#FEF2F2;"><span class="ni-doc"></span> 🔴 先说说有多乱</div>
+          <div class="nav-item"><span class="ni-doc"></span> 四步解法</div>
+          <div class="nav-item"><span class="ni-doc"></span> 掏心窝话</div>
+        </div>
+      </div>
+      <div class="mascot">🤖</div>
+    </div>
+    <div class="main">
+      <div class="breadcrumb"><span>… › 优惠券 Skill 方法论复盘</span><button class="bc-share">分享</button></div>
+      <div class="meta-row"><div class="author-avatar">袁</div><span>袁中天</span><span>·</span><span>2026-08-10 修改</span><span class="tag-ai">✦ AI 速览</span></div>
+
+      <h1 class="card-title">一、先说说有多乱</h1>
+
+      <p>周五下午项目群炸了。<b>两个人前后脚改了同一个字段</b>，后合的那个把前面的改动整块盖掉了。<span class="hl">当月第三次。</span></p>
+
+      <p>我手头管着一套优惠券系统，研发甩过来二十多条需求，每条都要落 PRD、对原型。那不是一份文档，是<b>一堆永远合不拢的活儿</b>。</p>
+
+      <p>从七月中到八月初，<b>断断续续改了三周多</b>。几乎每天都在改，周末也改。有几次一个人对着文档改到晚上十一点多，屋里就一盏台灯，人已经瘫了，脑子里只剩一个念头：<b>这回周一能准时上。</b>结果周一刚上班，群就炸了。</p>
+
+      <h2>几个数字我记到现在</h2>
+      <ul class="key-points">
+        <li><b>八九个并行草稿</b>同时躺在 tasks 目录里，从 R5 到 R17</li>
+        <li><b>二十多个备份版本</b>，PRD 版本号从 V2.0 爬到 V2.2.1</li>
+        <li><b>五十多张图</b>转 Word 全飞了，满屏空白框</li>
+        <li>C 端原型从 <b>v1.0 重画到 v1.9</b>，至少四五版推倒重来</li>
+      </ul>
+
+      <div class="highlight-block">
+        ⚠️ 最崩的一次：让 AI 直接改主文件，结果幺蛾子炸三个——<br>
+        <span class="hl">红字残留</span> · <span class="hl">互相覆盖</span> · <span class="hl">错误推送上线</span>
+      </div>
+    </div>
+  </div>
+  <div class="watermark">贴图号·产品袁</div>
+</div>
+
+
+<!-- ==================== 卡片3：四步解法总览 ==================== -->
+<div class="card">
+  <div class="card-inner">
+    <div class="sidebar">
+      <div class="sb-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 飞书云文档</div>
+      <div class="kb-name"><div class="kb-icon">产</div><span>产品经理复盘知识库</span></div>
+      <div class="nav-label">目录</div>
+      <div class="nav-tree">
+        <div class="nav-item active"><span class="ni-icon" style="background:#3B82F6;">📄</span> 优惠券 Skill 方法论复盘</div>
+        <div class="nav-sub">
+          <div class="nav-item active" style="background:#EFF6FF;"><span class="ni-doc"></span> 🟢 二、四步解法总览</div>
+          <div class="nav-item"><span class="ni-doc"></span> 步骤1-2 详情</div>
+          <div class="nav-item"><span class="ni-doc"></span> 步骤3-4 详情</div>
+        </div>
+      </div>
+      <div class="mascot">🤖</div>
+    </div>
+    <div class="main">
+      <div class="breadcrumb"><span>… › 优惠券 Skill 方法论复盘</span><button class="bc-share">分享</button></div>
+      <div class="meta-row"><div class="author-avatar">袁</div><span>袁中天</span><span>·</span><span>2026-08-10 修改</span><span class="tag-ai">✦ AI 速览</span></div>
+
+      <h1 class="card-title">二、我做了哪四件事</h1>
+      <div class="card-desc">痛定思痛，一步步把流程重构了。不是一次性想清楚的，是每翻一次车改一点，<b>迭代了四轮</b>。</div>
+
+      <!-- 流程图 -->
+      <div class="flow-card">
+        <div class="flow-title"><span class="ft-tag">图 1</span> 四轮迭代演进</div>
+        <div class="flow-steps">
+          <div class="fs-node solid">V1 直接改<br>三连翻车</div>
+          <div class="fs-arrow">→</div>
+          <div class="fs-node">① 隔离草稿<br>+ 红黑规则</div>
+          <div class="fs-arrow">→</div>
+          <div class="fs-node">② 跨任务<br>冲突检测</div>
+          <div class="fs-arrow">→</div>
+          <div class="fs-node">③ 推送<br>队列分离</div>
+          <div class="fs-arrow">→</div>
+          <div class="fs-node">④ AI 只排查<br>不拍板</div>
+        </div>
+      </div>
+
+      <h2>第一步：隔离草稿 + 红黑规则</h2>
+      <p>每次来需求，不开主文件，先开一个<b>隔离草稿</b>在本地改。定了一条规则：<b>红字是这次新改的，黑字是原样没动的</b>。一眼扫过去就知道动了哪。</p>
+      <p>以前是八个人在同一块地里刨，现在是每人一小块自留地，刨完再拼。</p>
+
+      <h2>第二步：跨任务冲突检测</h2>
+      <p>草稿多了新问题——别人在你不知情时改了同一块，等合的时候才发现。所以我每次动手前先写<b>范围声明</b>，说清这次动哪一章、哪个视图，串行合的时候查重叠。</p>
+      <div class="quote-block">
+        💎 死守红线：<b>一发现冲突，找人确认，绝不沉默处置。</b><br>AI 不替你做谁覆盖谁的决定，必须人来拍。
+      </div>
+    </div>
+  </div>
+  <div class="watermark">贴图号·产品袁</div>
+</div>
+
+
+<!-- ==================== 卡片4：步骤3-4详情 ==================== -->
+<div class="card">
+  <div class="card-inner">
+    <div class="sidebar">
+      <div class="sb-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 飞书云文档</div>
+      <div class="kb-name"><div class="kb-icon">产</div><span>产品经理复盘知识库</span></div>
+      <div class="nav-label">目录</div>
+      <div class="nav-tree">
+        <div class="nav-item active"><span class="ni-icon" style="background:#3B82F6;">📄</span> 优惠券 Skill 方法论复盘</div>
+        <div class="nav-sub">
+          <div class="nav-item"><span class="ni-doc"></span> 四步解法总览</div>
+          <div class="nav-item"><span class="ni-doc"></span> 步骤1-2 详情</div>
+          <div class="nav-item active" style="background:#EFF6FF;"><span class="ni-doc"></span> 步骤3-4 详情</div>
+        </div>
+      </div>
+      <div class="mascot">🤖</div>
+    </div>
+    <div class="main">
+      <div class="breadcrumb"><span>… › 优惠券 Skill 方法论复盘</span><button class="bc-share">分享</button></div>
+      <div class="meta-row"><div class="author-avatar">袁</div><span>袁中天</span><span>·</span><span>2026-08-10 修改</span><span class="tag-ai">✦ AI 速览</span></div>
+
+      <h1 class="card-title">第三步 & 第四步</h1>
+
+      <h2>第三步：推送分离</h2>
+      <p>合并和发布原来耦合在一起，一合就推，错了连后悔机会都没有。我把它拆开，单独弄个<b>推送队列</b>，本地先攒着，最后按顺序一条条发。发完回读线上确认红字等于零，这趟才算完。</p>
+      <p>顺带治好了转 Word 的毛病——源头干净了，转出来才不歪。很多转 Word 的破事，根子不在转，在源头的 HTML 里混了太多临时标记。</p>
+
+      <h2>第四步：AI 只排查，不拍板（最重要）⭐</h2>
+      <p>这是最贵的一课。我加了道<b>产品原则预审</b>，但和自己约法三章：</p>
+      <ul class="key-points">
+        <li>AI 读需求，把觉得不对劲的列成清单报给我</li>
+        <li><b>我来拍板</b>，结论才进 PRD</li>
+        <li>AI 绝不自作主张加戏写进去</li>
+      </ul>
+
+      <div class="highlight-block" style="border-color:#EF4444;background:#FEF2F2;">
+        😬 有次 AI 自作主张补了一个我觉得没必要的字段，还写了套校验逻辑，看起来特别专业。<br>
+        评审时被研发一句话问住：<b>「这字段谁要用？」</b><br>我说不上来，因为不是我要的，是 AI 自己加的。
+      </div>
+
+      <p style="margin-top:14px;">从那以后定了：AI 可以怀疑、可以提问、可以列清单，<b class="hl">但笔必须握在人手里</b>。</p>
+    </div>
+  </div>
+  <div class="watermark">贴图号·产品袁</div>
+</div>
+
+
+<!-- ==================== 卡片5：现在样子+截图 ==================== -->
+<div class="card">
+  <div class="card-inner">
+    <div class="sidebar">
+      <div class="sb-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 飞书云文档</div>
+      <div class="kb-name"><div class="kb-icon">产</div><span>产品经理复盘知识库</span></div>
+      <div class="nav-label">目录</div>
+      <div class="nav-tree">
+        <div class="nav-item active"><span class="ni-icon" style="background:#3B82F6;">📄</span> 优惠券 Skill 方法论复盘</div>
+        <div class="nav-sub">
+          <div class="nav-item active" style="background:#F0FDF4;"><span class="ni-doc"></span> ✅ 三、现在长什么样</div>
+          <div class="nav-item"><span class="ni-doc"></span> 掏心窝话</div>
+        </div>
+      </div>
+      <div class="mascot">🤖</div>
+    </div>
+    <div class="main">
+      <div class="breadcrumb"><span>… › 优惠券 Skill 方法论复盘</span><button class="bc-share">分享</button></div>
+      <div class="meta-row"><div class="author-avatar">袁</div><span>袁中天</span><span>·</span><span>2026-08-10 修改</span><span class="tag-ai">✦ AI 速览</span></div>
+
+      <h1 class="card-title">三、现在长什么样</h1>
+      <p>这套流程落地后，我做成了几个专门的 Skill，凑成一套能跑的体系：</p>
+
+      <!-- 状态机流程图 -->
+      <div class="flow-card">
+        <div class="flow-title"><span class="ft-tag">图 2</span> 需求流转状态机</div>
+        <div class="flow-steps">
+          <div class="fs-node">收到需求</div><div class="fs-arrow">→</div>
+          <div class="fs-node">开隔离<br>草稿 tasks/</div><div class="fs-arrow">→</div>
+          <div class="fs-node">出原型<br>+ PRD 标红</div><div class="fs-arrow">→</div>
+          <div class="fs-node">人确认</div><div class="fs-arrow">→</div>
+          <div class="fs-node">合并<br>转黑</div><div class="fs-arrow">→</div>
+          <div class="fs-node">入推送<br>队列</div><div class="fs-arrow">→</div>
+          <div class="fs-node solid">顺序<br>发布</div><div class="fs-arrow">→</div>
+          <div class="fs-node solid">回读校验<br>红字=0 ✓</div>
+        </div>
+      </div>
+
+      <h2>真实截图</h2>
+      <div class="gallery">
+        <div class="gallery-item">
+          <img src="https://ddyuan-spec.github.io/content-archive/images/fig3a-red-black-rules.png" alt="红黑规则" loading="lazy">
+          <div class="gallery-caption">① 红黑规则：红色 = 本次新增/修改，黑色 = 原有内容</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://ddyuan-spec.github.io/content-archive/images/fig3b-tasks-directory.png" alt="隔离草稿目录" loading="lazy">
+          <div class="gallery-caption">② 隔离草稿：tasks 目录下多个并行草稿，每个一个独立需求</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://ddyuan-spec.github.io/content-archive/images/fig3c-push-queue.png" alt="推送队列" loading="lazy">
+          <div class="gallery-caption">③ 推送队列：push-queue.json 记录每条任务的状态</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="watermark">贴图号·产品袁</div>
+</div>
+
+
+<!-- ==================== 卡片6：掏心窝话 ==================== -->
+<div class="card">
+  <div class="card-inner">
+    <div class="sidebar">
+      <div class="sb-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 飞书云文档</div>
+      <div class="kb-name"><div class="kb-icon">产</div><span>产品经理复盘知识库</span></div>
+      <div class="nav-label">目录</div>
+      <div class="nav-tree">
+        <div class="nav-item active"><span class="ni-icon" style="background:#3B82F6;">📄</span> 优惠券 Skill 方法论复盘</div>
+        <div class="nav-sub">
+          <div class="nav-item"><span class="ni-doc"></span> 现在的样子</div>
+          <div class="nav-item active" style="background:#FEF2F2;"><span class="ni-doc"></span> 💬 四、掏心窝的话</div>
+        </div>
+      </div>
+      <div class="mascot">🤖</div>
+    </div>
+    <div class="main">
+      <div class="breadcrumb"><span>… › 优惠券 Skill 方法论复盘</span><button class="bc-share">分享</button></div>
+      <div class="meta-row"><div class="author-avatar">袁</div><span>袁中天</span><span>·</span><span>2026-08-10 修改</span><span class="tag-ai">✦ AI 速览</span></div>
+
+      <h1 class="card-title">四、几点掏心窝的话</h1>
+
+      <div class="quote-block">
+        <b>设计 Skill 和设计产品，没本质区别。</b><br>
+        都得定红线、划边界、画状态机、想异常。你给 AI 写的流程，和给研发写的 PRD，底层是一回事：<br>
+        <b>把模糊的意图变成确定的、可执行的、出错能兜住的规矩。</b>
+      </div>
+
+      <p>别再问 AI 会不会取代产品经理了，先想想你有没有把流程设计清楚。流程不清楚，AI 再强也是个<b>乱出拳的壮汉</b>。</p>
+
+      <p>回到开头那个周五的群消息。现在它还会响吗？会。但响的时候，我知道去哪看、谁在改、该找谁确认。<b class="hl">那个深夜十一点合完周一又炸的画面，没再出现过。</b>不是因为 AI 变聪明了，是因为我把规矩立住了。</p>
+
+      <div class="highlight-block">
+        📌 如果你也管那种会并行改的文档，先别急着上 AI，先把三件事想清楚：<br>
+        <b>隔离、红线、还有谁拍板。</b>
+      </div>
+
+      <p style="color:#6B7280;font-size:13.5px;margin-top:18px;">以上是不成熟的经验，不一定对，但确实是踩出来的。如果早一点想明白，我至少能少熬三四个夜。写这篇不是为了显得多厉害，是想告诉同样在泥里刨的人——<b class="hl">坑是可以绕的，只是得有人先踩过、再指给你看。</b></p>
+    </div>
+  </div>
+  <div class="watermark">贴图号·产品袁</div>
+</div>
+
+
+<!-- ==================== 卡片7：尾图（关注） ==================== -->
+<div class="card end-card">
+  <div class="card-inner">
+    <div class="sidebar">
+      <div class="sb-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 飞书云文档</div>
+      <div class="kb-name"><div class="kb-icon">产</div><span>产品经理复盘知识库</span></div>
+      <div class="nav-label">目录</div>
+      <div class="nav-tree">
+        <div class="nav-item"><span class="ni-icon" style="background:#10B981;">✓</span> 全部文章已读完</div>
+      </div>
+      <div class="mascot">🤖</div>
+    </div>
+    <div class="main">
+      <div class="end-qr-wrap">
+        <img src="https://ddyuan-spec.github.io/content-archive/images/qr-code.jpg" alt="公众号二维码">
+      </div>
+      <div class="end-title">关注我，看更多产品踩坑复盘</div>
+      <div class="end-sub">点击上方名片，第一时间收到下一篇 ☕</div>
+      <div class="end-cta">觉得有用，点个 <b style="color:var(--accent-red);">「在看」</b> 让更多人看到</div>
+      <div class="end-sign">一个在泥里刨过、想把坑指给你看的产品经理</div>
+    </div>
+  </div>
+  <div class="watermark">贴图号·产品袁</div>
+</div>
+
+</body>
+</html>
