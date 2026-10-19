@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能客服 Agent 产品介绍 · 可视化演示</title>
+<style>
+:root{
+  --ink:#26221c;
+  --muted:#7a7365;
+  --faint:#a89f8e;
+  --brand:#b56a1c;
+  --brand-deep:#8a4f16;
+  --brand-soft:#f7ead7;
+  --cream:#faf6ee;
+  --paper:#ffffff;
+  --line:#eadfc9;
+  --ok:#2e7d5b;
+  --ok-bg:#e8f4ee;
+  --warn:#b5432f;
+  --warn-bg:#fbeeea;
+  --ai:#3f6d8f;
+  --ai-bg:#eaf2f8;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(60,45,20,.05),0 8px 24px rgba(60,45,20,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+/* ---------- top bar ---------- */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(250,246,238,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+  height:52px;display:flex;align-items:center;
+}
+.topbar .wrap{width:min(1120px,94vw);margin:0 auto;display:flex;align-items:center;gap:18px}
+.topbar .logo{font-weight:700;font-size:15px;color:var(--brand-deep);white-space:nowrap}
+.topbar .logo em{font-style:normal;color:var(--faint);font-weight:500;font-size:12px;margin-left:8px}
+.topbar nav{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none}
+.topbar nav::-webkit-scrollbar{display:none}
+.topbar nav a{
+  font-size:12.5px;color:var(--muted);text-decoration:none;white-space:nowrap;
+  padding:4px 10px;border-radius:99px;transition:.2s;
+}
+.topbar nav a:hover{color:var(--brand-deep);background:var(--brand-soft)}
+.progress{position:fixed;top:52px;left:0;height:2.5px;background:linear-gradient(90deg,var(--brand),#d99a3f);width:0;z-index:101}
+/* ---------- layout ---------- */
+.wrap{width:min(1120px,94vw);margin:0 auto}
+section.deck{padding:74px 0 26px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.sec-num{
+  font-size:13px;font-weight:700;color:var(--brand);letter-spacing:.12em;
+  border:1.5px solid var(--brand);border-radius:99px;padding:2px 12px;white-space:nowrap;
+}
+.sec-title{font-size:clamp(22px,3.2vw,30px);font-weight:800;letter-spacing:.01em}
+.sec-sub{color:var(--muted);font-size:14.5px;margin:2px 0 34px;max-width:760px}
+.card{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px 24px;
+}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:960px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{
+  display:inline-block;font-size:11.5px;font-weight:600;padding:1.5px 9px;border-radius:99px;
+  background:var(--brand-soft);color:var(--brand-deep);border:1px solid #ecd9b8;
+}
+.tag.ext{background:#f1efe9;color:#6f6a5e;border-color:#ddd8cb}
+.tag.ok{background:var(--ok-bg);color:var(--ok);border-color:#cbe6d8}
+.tag.warn{background:var(--warn-bg);color:var(--warn);border-color:#f2d2c8}
+.tag.ai{background:var(--ai-bg);color:var(--ai);border-color:#cfe0ee}
+.small{font-size:12.5px;color:var(--muted)}
+.mt8{margin-top:8px}.mt14{margin-top:14px}.mt20{margin-top:20px}.mt28{margin-top:28px}
+strong{font-weight:700}
+.hl{background:linear-gradient(transparent 62%,#f6dfae 62%);padding:0 2px}
+/* ---------- cover ---------- */
+.cover{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  background:
+    radial-gradient(900px 420px at 85% -10%,#f3e2c3 0%,transparent 60%),
+    radial-gradient(700px 380px at -10% 110%,#efe6d2 0%,transparent 55%),
+    var(--cream);
+  padding-top:52px;position:relative;overflow:hidden;
+}
+.cover .kicker{
+  display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;
+  color:var(--brand-deep);background:#fff;border:1px solid #ecd9b8;border-radius:99px;
+  padding:5px 14px;width:max-content;box-shadow:var(--shadow);
+}
+.cover h1{font-size:clamp(30px,5.2vw,52px);font-weight:900;line-height:1.24;margin:22px 0 14px;letter-spacing:.01em}
+.cover h1 .accent{color:var(--brand)}
+.cover .sub{font-size:clamp(15px,2vw,19px);color:var(--muted);max-width:640px}
+.cover .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.cover .meta span{
+  font-size:13px;color:var(--brand-deep);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:6px 14px;box-shadow:var(--shadow);
+}
+.cover .note{margin-top:44px;font-size:12.5px;color:var(--faint);max-width:640px}
+.cover .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.cover .toc a{
+  font-size:12.5px;color:var(--muted);text-decoration:none;background:#fff;
+  border:1px solid var(--line);border-radius:99px;padding:4px 12px;transition:.2s;
+}
+.cover .toc a:hover{color:var(--brand-deep);border-color:var(--brand)}
+.goat{position:absolute;right:-30px;bottom:-30px;opacity:.9;pointer-events:none}
+@media (max-width:900px){.goat{display:none}}
+/* ---------- steps (一页看懂) ---------- */
+.flow3{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:stretch}
+@media (max-width:900px){.flow3{grid-template-columns:1fr}.flow3 .arr{transform:rotate(90deg);margin:0 auto}}
+.flow3 .arr{align-self:center;color:var(--brand);font-size:26px;font-weight:700}
+.step-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;position:relative}
+.step-card .st{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--brand);margin-bottom:6px}
+.step-card h3{font-size:17px;font-weight:800;margin-bottom:10px}
+.step-card ul{list-style:none}
+.step-card li{font-size:13.5px;color:#4c463c;padding:5px 0 5px 18px;position:relative}
+.step-card li::before{content:"";position:absolute;left:2px;top:13px;width:6px;height:6px;border-radius:2px;background:var(--brand)}
+.step-card.now{border-color:#e3b578;background:linear-gradient(180deg,#fffdf8,#fff)}
+.step-card.target{border-color:var(--brand);background:linear-gradient(180deg,#fffaf1,#fff)}
+/* ---------- value cards ---------- */
+.v-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:10px}
+.v-card .ico{width:40px;height:40px;border-radius:11px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center}
+.v-card h4{font-size:16px;font-weight:800}
+.v-card .chg{font-size:13.5px;color:#4c463c;flex:1}
+.v-card .ver{font-size:12px;color:var(--brand-deep);background:var(--brand-soft);border-radius:9px;padding:7px 11px}
+.v-card .ver b{display:block;font-size:11px;color:var(--faint);font-weight:600;margin-bottom:2px}
+/* ---------- feature modules ---------- */
+.mod{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px}
+.mod header{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.mod header .dot{width:10px;height:10px;border-radius:3px;background:var(--brand)}
+.mod header h4{font-size:15.5px;font-weight:800;flex:1}
+.mod .item{display:flex;gap:9px;padding:6px 0;font-size:13px;color:#4c463c;align-items:flex-start}
+.mod .item b{font-weight:700;color:var(--ink);white-space:nowrap}
+.mod .item .txt{flex:1}
+/* ---------- boundary ---------- */
+.bound{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:720px){.bound{grid-template-columns:1fr}}
+.bound .col{border-radius:var(--radius);padding:20px 22px;border:1px solid}
+.bound .can{background:var(--ok-bg);border-color:#cbe6d8}
+.bound .must{background:var(--warn-bg);border-color:#f2d2c8}
+.bound h4{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.bound .can h4{color:var(--ok)}.bound .must h4{color:var(--warn)}
+.bound li{list-style:none;font-size:13.5px;padding:5px 0 5px 20px;position:relative;color:#3f3a31}
+.bound .can li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+.bound .must li::before{content:"→";position:absolute;left:0;color:var(--warn);font-weight:700}
+/* ---------- phone mockup ---------- */
+.demos{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+@media (max-width:900px){.demos{grid-template-columns:1fr}}
+.phone{
+  width:320px;margin:0 auto;background:#2b2823;border-radius:42px;padding:12px;
+  box-shadow:0 18px 46px rgba(50,38,15,.22);position:relative;
+}
+.phone .notch{width:110px;height:22px;background:#2b2823;border-radius:0 0 14px 14px;position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:2}
+.screen{background:#f4efe4;border-radius:32px;overflow:hidden;display:flex;flex-direction:column;height:560px}
+.screen .bar{background:#fff;padding:30px 14px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e7ddc9}
+.screen .bar .ava{width:28px;height:28px;border-radius:8px;background:var(--brand);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.screen .bar .t{flex:1}
+.screen .bar .t b{font-size:13.5px;display:block;line-height:1.2}
+.screen .bar .t span{font-size:10.5px;color:var(--faint)}
+.screen .bar .st{font-size:10px;color:var(--ok);background:var(--ok-bg);border-radius:99px;padding:2px 8px}
+.chat{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.msg{max-width:78%;font-size:12.8px;line-height:1.55;padding:9px 12px;border-radius:14px;position:relative}
+.msg .who{display:block;font-size:10px;color:var(--faint);margin-bottom:3px}
+.msg.left{align-self:flex-start;background:#fff;border:1px solid #e7ddc9;border-top-left-radius:4px;color:#3a352c}
+.msg.right{align-self:flex-end;background:#f6e6c6;border-top-right-radius:4px;color:#3a352c}
+.msg .ph{background:#fdf3dd;border:1px dashed #d9b86e;border-radius:6px;padding:1px 6px;color:#8a6a1f;font-size:12px}
+.sysline{align-self:center;font-size:10.5px;color:var(--faint);background:#ece4d2;border-radius:99px;padding:2px 10px}
+.inputbar{background:#fff;border-top:1px solid #e7ddc9;padding:9px 12px;display:flex;gap:8px;align-items:center}
+.inputbar .fake{flex:1;background:#f4efe4;border-radius:99px;padding:7px 14px;font-size:11.5px;color:var(--faint)}
+.inputbar .send{width:30px;height:30px;border-radius:9px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
+.demo-side .ann{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-top:16px}
+.demo-side .ann h5{font-size:13.5px;font-weight:800;color:var(--brand-deep);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.demo-side .ann h5 .n{width:18px;height:18px;border-radius:6px;background:var(--brand);color:#fff;font-size:11px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.demo-side .ann p{font-size:13px;color:#4c463c}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.chips .c{font-size:11.5px;background:var(--brand-soft);color:var(--brand-deep);border:1px solid #ecd9b8;border-radius:99px;padding:3px 11px}
+/* ---------- admin mockup ---------- */
+.browser{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.browser .chrome{background:#f2ecdf;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.browser .chrome .dots{display:flex;gap:5px}
+.browser .chrome .dots i{width:10px;height:10px;border-radius:50%;display:block}
+.browser .chrome .dots i:nth-child(1){background:#e0654f}.browser .chrome .dots i:nth-child(2){background:#e6b93f}.browser .chrome .dots i:nth-child(3){background:#6fbf73}
+.browser .chrome .url{flex:1;background:#fff;border:1px solid var(--line);border-radius:99px;font-size:11.5px;color:var(--muted);padding:4px 14px}
+.admin{display:grid;grid-template-columns:150px 1fr;min-height:430px}
+@media (max-width:640px){.admin{grid-template-columns:1fr}.admin .side{display:flex;flex-wrap:wrap;gap:6px}}
+.admin .side{background:#faf6ee;border-right:1px solid var(--line);padding:16px 12px}
+.admin .side .mi{font-size:12.5px;color:#5c564a;padding:8px 11px;border-radius:9px;display:flex;gap:8px;align-items:center;margin-bottom:4px}
+.admin .side .mi.on{background:#fff;color:var(--brand-deep);font-weight:700;border:1px solid var(--line);box-shadow:var(--shadow)}
+.admin .side .mi .ic{width:16px;text-align:center}
+.admin .main{padding:18px 20px}
+.admin .main h4{font-size:15.5px;font-weight:800;margin-bottom:2px}
+.admin .main .crumb{font-size:11.5px;color:var(--faint);margin-bottom:14px}
+.frm{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+@media (max-width:640px){.frm{grid-template-columns:1fr}}
+.frm .f{background:#faf6ee;border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.frm .f label{display:block;font-size:10.5px;color:var(--faint);margin-bottom:3px}
+.frm .f .v{font-size:12.8px;color:var(--ink);font-weight:600}
+.frm .f .v .pill{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 8px;font-size:11.5px;margin:1px 3px 1px 0}
+.admin .btns{display:flex;gap:8px;margin-top:14px}
+.btn{font-size:12px;font-weight:600;border-radius:9px;padding:7px 15px;border:1px solid var(--line);background:#fff;color:#5c564a}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:#fff}
+.testbox{margin-top:14px;border:1px dashed #d9b86e;background:#fffdf4;border-radius:10px;padding:12px 14px}
+.testbox .tt{font-size:12px;font-weight:700;color:#8a6a1f;margin-bottom:7px}
+.testbox .tr{font-size:12px;color:#4c463c;display:flex;gap:7px;padding:3px 0}
+.testbox .tr .ok{color:var(--ok);font-weight:700}
+.pubbar{margin-top:12px;display:flex;align-items:center;gap:10px;background:var(--ok-bg);border:1px solid #cbe6d8;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#2c5c47}
+.pubbar .go{margin-left:auto}
+/* ---------- timeline ---------- */
+.tl{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative}
+@media (max-width:960px){.tl{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.tl{grid-template-columns:1fr}}
+.tl::before{content:"";position:absolute;top:26px;left:4%;right:4%;height:2px;background:repeating-linear-gradient(90deg,var(--brand) 0 14px,transparent 14px 24px);opacity:.5}
+.tl .ph{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 17px;position:relative}
+.tl .ph .wk{display:inline-block;font-size:11.5px;font-weight:700;color:#fff;background:var(--brand);border-radius:99px;padding:2px 11px;margin-bottom:9px}
+.tl .ph h4{font-size:14.5px;font-weight:800;margin-bottom:8px}
+.tl .ph p{font-size:12.5px;color:#4c463c;margin-bottom:8px}
+.tl .ph .out{font-size:11.5px;color:var(--brand-deep);background:var(--brand-soft);border-radius:8px;padding:6px 10px}
+.tl .ph .out b{display:block;font-size:10.5px;color:var(--faint);font-weight:600}
+/* ---------- metrics ---------- */
+.mx{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+.mx h4{font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.mx h4 .lv{font-size:10.5px;font-weight:700;color:var(--brand-deep);background:var(--brand-soft);border-radius:6px;padding:1px 7px}
+.mx p{font-size:12.5px;color:#4c463c;margin-bottom:7px}
+.mx .how{font-size:11.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:7px}
+.formula{background:#fff;border:1.5px solid var(--brand);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 26px;margin-top:18px}
+.formula .f1{font-size:clamp(15px,2.4vw,19px);font-weight:800;text-align:center;line-height:1.5}
+.formula .f1 .op{color:var(--brand);margin:0 8px}
+.formula .f2{text-align:center;font-size:13px;color:#4c463c;margin-top:12px}
+.formula .f2 .it{display:inline-block;background:var(--brand-soft);border-radius:8px;padding:3px 10px;margin:3px 4px;font-size:12.5px;color:var(--brand-deep)}
+.formula .warnline{margin-top:14px;font-size:12.5px;color:var(--warn);background:var(--warn-bg);border-radius:9px;padding:9px 13px}
+/* ---------- coop ---------- */
+.stage{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:860px){.stage{grid-template-columns:1fr}}
+.stage .s{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;position:relative}
+.stage .s .no{position:absolute;top:-13px;left:18px;background:var(--brand);color:#fff;font-size:12px;font-weight:700;border-radius:99px;padding:2px 12px}
+.stage .s h4{font-size:15.5px;font-weight:800;margin:6px 0 8px}
+.stage .s p{font-size:13px;color:#4c463c}
+.cta{background:linear-gradient(135deg,#8a4f16,#b56a1c);color:#fff;border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow)}
+.cta h4{font-size:18px;font-weight:800;margin-bottom:8px}
+.cta p{font-size:13.5px;opacity:.92;max-width:720px}
+.cta .chips2{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.cta .chips2 span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:99px;font-size:12.5px;padding:4px 13px}
+footer{padding:40px 0 60px;text-align:center;color:var(--faint);font-size:12px}
+footer .disc{max-width:760px;margin:10px auto 0;line-height:1.8}
+.divider{height:1px;background:var(--line);margin:64px auto 0;width:min(1120px,94vw)}
+@media print{
+  .topbar,.progress{display:none}
+  section.deck{padding:26px 0}
+  .cover{min-height:auto;padding:40px 0}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="logo">智能客服 Agent 产品介绍<em>可视化演示 · 2026.10</em></div>
+    <nav>
+      <a href="#s1">一页看懂</a><a href="#s2">业务流程图</a><a href="#s3">业务价值</a><a href="#s4">接待功能</a><a href="#s5">场景一</a><a href="#s6">场景二</a><a href="#s7">运营端</a><a href="#s8">管理端</a><a href="#s9">实施计划</a><a href="#s10">培训投入</a><a href="#s11">验收费用</a><a href="#s12">合作方式</a>
+    </nav>
+  </div>
+</div>
+<div class="progress" id="pg"></div>
+
+<!-- ============ COVER ============ -->
+<section class="cover">
+  <div class="wrap">
+    <span class="kicker">🐐 业务方案与功能清单 · 拟交付方案</span>
+    <h1>智能客服 <span class="accent">Agent</span><br>产品介绍</h1>
+    <p class="sub">在现有客服系统上升级 AI 接待能力：覆盖商品咨询、选购辅助、订单查询三大场景，并培训客服团队持续维护知识与业务规则——先试点，用实测数据决定是否正式替换。</p>
+    <div class="meta">
+      <span>📅 2026 年 10 月</span>
+      <span>🎯 付费试点 → 正式实施 → 可选维护</span>
+      <span>⏱ 建议周期 4–6 周</span>
+      <span>👥 面向产品与业务团队 · 无需 AI 背景</span>
+    </div>
+    <div class="toc">
+      <a href="#s1">01 一页看懂</a><a href="#s2">02 业务流程图</a><a href="#s3">03 业务价值</a><a href="#s4">04 客户接待功能</a><a href="#s5">05 场景演示 · 售前选购</a><a href="#s6">06 场景演示 · 订单查询</a><a href="#s7">07 运营端 · 团队自主维护</a><a href="#s8">08 管理端与部署</a><a href="#s9">09 实施计划</a><a href="#s10">10 培训与双方投入</a><a href="#s11">11 验收与收益评估</a><a href="#s12">12 合作方式与下一步</a>
+    </div>
+    <p class="note">说明：本文件为拟交付方案，功能、周期与验收建议用于范围讨论，最终以双方确认的交付清单为准；文中场景示例为拟实现方向，不是已上线演示或实测效果。</p>
+  </div>
+  <svg class="goat" width="380" height="380" viewBox="0 0 380 380" fill="none">
+    <circle cx="190" cy="190" r="170" fill="#f3e6cc"/>
+    <circle cx="190" cy="190" r="140" fill="#f8efdd"/>
+    <g transform="translate(96,88)">
+      <path d="M40 150 Q40 90 100 90 Q160 90 160 150 Q160 210 100 210 Q40 210 40 150Z" fill="#fff" stroke="#d9c9a8" stroke-width="3"/>
+      <circle cx="78" cy="140" r="7" fill="#3a352c"/>
+      <circle cx="122" cy="140" r="7" fill="#3a352c"/>
+      <ellipse cx="100" cy="172" rx="16" ry="11" fill="#f2c94c"/>
+      <ellipse cx="100" cy="172" rx="8" ry="5.5" fill="#e8a93c"/>
+      <path d="M70 96 Q60 70 74 58 Q84 74 92 84Z" fill="#b56a1c"/>
+      <path d="M130 96 Q140 70 126 58 Q116 74 108 84Z" fill="#b56a1c"/>
+      <path d="M52 150 Q30 148 26 132" stroke="#d9c9a8" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M148 150 Q170 148 174 132" stroke="#d9c9a8" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>
+</section>
+
+<!-- ============ 01 一页看懂 ============ -->
+<section class="deck" id="s1">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">一页看懂：这份方案要做什么</h2></div>
+    <p class="sec-sub">用三句话说明现状、建议与落地路径。Agent（AI 接待助手）= 一个能读懂客户问题、自动查资料和业务数据、按公司审核口径回答的智能程序，部署在公司自己的环境里。</p>
+    <div class="flow3">
+      <div class="step-card now">
+        <div class="st">现状 · 今天</div>
+        <h3>已有系统齐全，AI 接待不给力</h3>
+        <ul>
+          <li>公司已有自有<strong>电商系统</strong>和 <strong>ERP</strong></li>
+          <li>客服系统与 Agent 分离，旧 Agent 已完成接入</li>
+          <li>现有 AI 接待效果未达预期，<strong>较多咨询仍需人工处理</strong></li>
+        </ul>
+      </div>
+      <div class="arr">→</div>
+      <div class="step-card target">
+        <div class="st">建议 · 升级后</div>
+        <h3>窗口不变，大脑升级</h3>
+        <ul>
+          <li>沿用现有客服窗口，客户无感知</li>
+          <li>新增 AI 接待能力：<strong>商品咨询 · 选购辅助 · 订单查询</strong></li>
+          <li>培训团队自主维护知识与规则，形成公司资产</li>
+        </ul>
+      </div>
+      <div class="arr">→</div>
+      <div class="step-card">
+        <div class="st">路径 · 怎么落地</div>
+        <h3>先小范围付费试点</h3>
+        <ul>
+          <li>试点范围：<strong>1 条接待入口 · 1 个业务范围 · 3 类高频场景</strong></li>
+          <li>用测试报告和真实调用成本说话</li>
+          <li>再决定是否正式替换，始终保留回退方案</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 02 业务流程图 ============ -->
+<section class="deck" id="s2">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">整体业务流程图：升级后如何协作</h2></div>
+    <p class="sec-sub">一张图看懂各方分工：客服系统负责"收发消息"，AI 接待助手负责"想答案"，知识库和业务系统负责"给依据"，人工随时可以接管。</p>
+    <div class="card" style="padding:10px 6px 4px">
+      <svg viewBox="0 0 1060 660" style="width:100%;height:auto;display:block" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#8a4f16"/>
+          </marker>
+          <marker id="arrM" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#7a7365"/>
+          </marker>
+        </defs>
+
+        <!-- 客户 -->
+        <g>
+          <rect x="30" y="118" width="130" height="90" rx="14" fill="#fff" stroke="#d9c9a8" stroke-width="1.5"/>
+          <circle cx="70" cy="152" r="11" fill="none" stroke="#b56a1c" stroke-width="2.5"/>
+          <path d="M56 178 Q70 162 84 178" stroke="#b56a1c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <text x="110" y="158" font-size="15" font-weight="700" fill="#26221c">客户</text>
+          <text x="110" y="178" font-size="10.5" fill="#a89f8e">咨询 / 购买者</text>
+        </g>
+        <!-- arrow -->
+        <line x1="160" y1="163" x2="208" y2="163" stroke="#8a4f16" stroke-width="2" marker-end="url(#arr)"/>
+
+        <!-- 客服系统 -->
+        <g>
+          <rect x="210" y="112" width="185" height="102" rx="14" fill="#fff" stroke="#d9c9a8" stroke-width="1.5"/>
+          <text x="222" y="142" font-size="15" font-weight="700" fill="#26221c">现有客服系统</text>
+          <text x="222" y="166" font-size="11.5" fill="#7a7365">接收客户消息 · 维护接待窗口</text>
+          <text x="222" y="187" font-size="11.5" fill="#7a7365">人工客服在此接待</text>
+          <rect x="222" y="196" width="86" height="0" fill="none"/>
+        </g>
+        <line x1="395" y1="163" x2="438" y2="163" stroke="#8a4f16" stroke-width="2" marker-end="url(#arr)"/>
+
+        <!-- 适配服务 -->
+        <g>
+          <rect x="440" y="112" width="155" height="102" rx="14" fill="#fff" stroke="#d9c9a8" stroke-width="1.5"/>
+          <text x="452" y="142" font-size="15" font-weight="700" fill="#26221c">适配服务</text>
+          <text x="452" y="166" font-size="11.5" fill="#7a7365">消息与会话标识适配</text>
+          <text x="452" y="187" font-size="11.5" fill="#7a7365">回复与交接状态同步</text>
+        </g>
+        <line x1="595" y1="163" x2="645" y2="163" stroke="#8a4f16" stroke-width="2" marker-end="url(#arr)"/>
+
+        <!-- Agent -->
+        <g>
+          <rect x="647" y="88" width="215" height="150" rx="16" fill="#b56a1c"/>
+          <rect x="647" y="88" width="215" height="150" rx="16" fill="none" stroke="#8a4f16" stroke-width="2"/>
+          <text x="754.5" y="120" font-size="17" font-weight="800" fill="#fff" text-anchor="middle">AI 接待助手</text>
+          <text x="754.5" y="139" font-size="11" fill="#f3ddba" text-anchor="middle">Agent · 部署于公司环境</text>
+          <text x="754.5" y="166" font-size="12.5" fill="#fbeed6" text-anchor="middle">读懂问题 → 查资料 / 查数据</text>
+          <text x="754.5" y="188" font-size="12.5" fill="#fbeed6" text-anchor="middle">按审核口径组织回答</text>
+          <text x="754.5" y="212" font-size="12.5" fill="#fbeed6" text-anchor="middle">不编造商品、价格与承诺</text>
+        </g>
+
+        <!-- return path -->
+        <path d="M 700 238 V 262 H 302 V 216" fill="none" stroke="#8a4f16" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="500" y="254" font-size="11.5" fill="#8a4f16" text-anchor="middle">生成回答 · 回传客服窗口</text>
+
+        <!-- 人工分支 -->
+        <path d="M 302 262 V 296" fill="none" stroke="#7a7365" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrM)"/>
+        <text x="312" y="284" font-size="11" fill="#7a7365">需要人工时</text>
+        <g>
+          <rect x="212" y="298" width="185" height="94" rx="14" fill="#f4f1ea" stroke="#b7b0a1" stroke-width="1.5" stroke-dasharray="6 5"/>
+          <text x="224" y="326" font-size="14.5" font-weight="700" fill="#4c463c">人工客服接管</text>
+          <text x="224" y="349" font-size="11.5" fill="#7a7365">AI 停止自动回复</text>
+          <text x="224" y="370" font-size="11.5" fill="#7a7365">凭交接摘要继续接待</text>
+        </g>
+        <path d="M 397 345 H 417 V 216" fill="none" stroke="#7a7365" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrM)"/>
+
+        <!-- 知识库 -->
+        <line x1="700" y1="238" x2="648" y2="294" stroke="#3f6d8f" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="648" y1="294" x2="700" y2="238" stroke="#3f6d8f" stroke-width="0" marker-end="url(#arr)"/>
+        <g>
+          <rect x="470" y="296" width="245" height="96" rx="14" fill="#eaf2f8" stroke="#3f6d8f" stroke-width="1.5"/>
+          <text x="592.5" y="324" font-size="15" font-weight="700" fill="#2c4f66" text-anchor="middle">知识库</text>
+          <text x="592.5" y="348" font-size="11.5" fill="#4c6b82" text-anchor="middle">商品资料 · 活动规则 · 售后政策</text>
+          <text x="592.5" y="369" font-size="11.5" fill="#4c6b82" text-anchor="middle">全部经公司审核后才可回答</text>
+        </g>
+        <text x="655" y="272" font-size="11" fill="#3f6d8f">查知识</text>
+
+        <!-- 业务系统 -->
+        <line x1="812" y1="238" x2="884" y2="294" stroke="#3f6d8f" stroke-width="2" marker-end="url(#arr)"/>
+        <g>
+          <rect x="770" y="296" width="250" height="96" rx="14" fill="#eaf2f8" stroke="#3f6d8f" stroke-width="1.5"/>
+          <text x="895" y="324" font-size="15" font-weight="700" fill="#2c4f66" text-anchor="middle">业务系统（电商 / ERP）</text>
+          <text x="895" y="348" font-size="11.5" fill="#4c6b82" text-anchor="middle">订单 · 物流 · 价格与资格</text>
+          <text x="895" y="369" font-size="11.5" fill="#4c6b82" text-anchor="middle">实时查询，身份已验证</text>
+        </g>
+        <text x="868" y="272" font-size="11" fill="#3f6d8f">查数据</text>
+
+        <!-- 运营闭环 -->
+        <rect x="30" y="452" width="1000" height="118" rx="16" fill="#faf6ee" stroke="#e2c79a" stroke-width="1.5" stroke-dasharray="2 6"/>
+        <text x="48" y="478" font-size="13" font-weight="800" fill="#8a4f16">运营维护闭环 · 团队自主更新（不依赖技术方）</text>
+        <g font-size="11.5" fill="#4c463c">
+          <rect x="48" y="492" width="172" height="52" rx="10" fill="#fff" stroke="#e2c79a"/>
+          <text x="134" y="514" text-anchor="middle">① 客服标记</text><text x="134" y="531" text-anchor="middle">问题会话</text>
+          <rect x="242" y="492" width="172" height="52" rx="10" fill="#fff" stroke="#e2c79a"/>
+          <text x="328" y="514" text-anchor="middle">② 知识维护人员</text><text x="328" y="531" text-anchor="middle">补充 / 修正规则</text>
+          <rect x="436" y="492" width="172" height="52" rx="10" fill="#fff" stroke="#e2c79a"/>
+          <text x="522" y="514" text-anchor="middle">③ 客服主管</text><text x="522" y="531" text-anchor="middle">审核关键口径</text>
+          <rect x="630" y="492" width="172" height="52" rx="10" fill="#fff" stroke="#e2c79a"/>
+          <text x="716" y="514" text-anchor="middle">④ 发布前运行</text><text x="716" y="531" text-anchor="middle">固定测试集</text>
+          <rect x="824" y="492" width="172" height="52" rx="10" fill="#fff" stroke="#e2c79a"/>
+          <text x="910" y="514" text-anchor="middle">⑤ 上线后</text><text x="910" y="531" text-anchor="middle">抽查新增会话</text>
+        </g>
+        <g stroke="#8a4f16" stroke-width="1.8" marker-end="url(#arr)">
+          <line x1="220" y1="518" x2="238" y2="518"/><line x1="414" y1="518" x2="432" y2="518"/>
+          <line x1="608" y1="518" x2="626" y2="518"/><line x1="802" y1="518" x2="820" y2="518"/>
+        </g>
+        <path d="M 910 492 V 428 H 592 V 396" fill="none" stroke="#8a4f16" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arr)"/>
+        <text x="752" y="422" font-size="11.5" fill="#8a4f16" text-anchor="middle">更新知识库 · 每次修正留档</text>
+
+        <!-- legend -->
+        <g font-size="11.5" fill="#7a7365">
+          <line x1="30" y1="620" x2="70" y2="620" stroke="#8a4f16" stroke-width="2"/>
+          <text x="78" y="624">消息与数据流</text>
+          <line x1="190" y1="620" x2="230" y2="620" stroke="#7a7365" stroke-width="2" stroke-dasharray="6 5"/>
+          <text x="238" y="624">人工交接（附交接摘要 + 更新接待状态）</text>
+          <line x1="520" y1="620" x2="560" y2="620" stroke="#8a4f16" stroke-width="2" stroke-dasharray="6 5"/>
+          <text x="568" y="624">知识更新回流</text>
+        </g>
+        <text x="1030" y="624" font-size="11" fill="#a89f8e" text-anchor="end">升级后系统协作全景</text>
+      </svg>
+    </div>
+    <p class="small mt14">要点：① 客户侧无感知，仍使用原客服窗口；② AI 只依据审核过的知识和实时业务数据回答，查不到或不该答时转人工；③ 人工接管后 AI 自动停止回复；④ 每一次知识修正都留档、可测试、可撤回，沉淀为公司资产。</p>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 03 业务价值 ============ -->
+<section class="deck" id="s3">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">预期业务价值：四个可验证的目标</h2></div>
+    <p class="sec-sub">不谈概念，只谈工作方式的变化，以及每一项用什么方式验证。</p>
+    <div class="grid g4">
+      <div class="v-card">
+        <div class="ico">⚡</div>
+        <h4>减少重复接待</h4>
+        <p class="chg">资料齐全、规则明确的常见咨询由 AI 独立处理，人工专注复杂问题。</p>
+        <div class="ver"><b>验证方式</b>统计独立解决率与人工处理时长</div>
+      </div>
+      <div class="v-card">
+        <div class="ico">🛒</div>
+        <h4>改善售前服务</h4>
+        <p class="chg">围绕需求追问、商品比较和活动解释提供帮助，推荐有依据、可追溯。</p>
+        <div class="ver"><b>验证方式</b>抽查推荐依据，观察咨询成交表现</div>
+      </div>
+      <div class="v-card">
+        <div class="ico">🧰</div>
+        <h4>掌握运营能力</h4>
+        <p class="chg">指定员工可自己维护资料、测试回答并发布更新，不依赖技术方。</p>
+        <div class="ver"><b>验证方式</b>员工独立完成实操任务</div>
+      </div>
+      <div class="v-card">
+        <div class="ico">💰</div>
+        <h4>提高成本可控性</h4>
+        <p class="chg">实施、模型、服务器与维护支出分别核算，与旧方案可取消费用比较。</p>
+        <div class="ver"><b>验证方式</b>与旧方案可取消费用对比</div>
+      </div>
+    </div>
+    <div class="card mt20" style="background:var(--brand-soft);border-color:#ecd9b8">
+      <p style="font-size:14px;color:#5c4a2e"><strong style="color:var(--brand-deep)">合作建议：</strong>先完成限定场景的<strong>付费试点</strong>，再根据实测结果实施正式替换。试点优先覆盖<strong>一条现有接待入口、一个业务范围和三类高频场景</strong>；具体商品范围及接口数量在启动时确认。</p>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 04 接待功能 ============ -->
+<section class="deck" id="s4">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">客户接待功能：AI 能做什么</h2></div>
+    <p class="sec-sub">沿用现有客服窗口，新增能力由 Agent 后端及接口适配提供。"一期"为建议纳入首轮正式交付，"扩展"为单独评估后实施。</p>
+    <div class="grid g3">
+      <div class="mod">
+        <header><span class="dot"></span><h4>商品咨询</h4><span class="tag">一期</span></header>
+        <div class="item"><b>产品知识问答</b><span class="txt">按商品资料回答规格、配料、储存、保质期，区分不同商品和版本</span></div>
+        <div class="item"><b>上下文理解</b><span class="txt">理解"这款""刚才那个"等追问；信息不足时先澄清再回答</span></div>
+      </div>
+      <div class="mod">
+        <header><span class="dot"></span><h4>选购辅助</h4><span class="tag">一期</span></header>
+        <div class="item"><b>需求了解</b><span class="txt">询问口味、规格、预算和购买用途，并控制追问数量</span></div>
+        <div class="item"><b>商品比较</b><span class="txt">依据经审核的商品属性解释差异，推荐理由可追溯</span></div>
+      </div>
+      <div class="mod">
+        <header><span class="dot"></span><h4>营销咨询</h4><span class="tag">一期</span></header>
+        <div class="item"><b>活动解释</b><span class="txt">按有效期和适用条件说明优惠；价格与资格以业务数据为准</span></div>
+      </div>
+      <div class="mod">
+        <header><span class="dot"></span><h4>订单服务</h4><span class="tag">一期</span></header>
+        <div class="item"><b>订单及物流查询</b><span class="txt">验证客户身份后查询订单并解释当前状态；异常时交接人工</span></div>
+      </div>
+      <div class="mod">
+        <header><span class="dot"></span><h4>售后咨询</h4><span class="tag">一期</span></header>
+        <div class="item"><b>规则说明</b><span class="txt">解释已确认的退换货流程，收集人工处理所需信息</span></div>
+      </div>
+      <div class="mod">
+        <header><span class="dot"></span><h4>人工协同</h4><span class="tag">一期</span></header>
+        <div class="item"><b>转人工</b><span class="txt">客户明确要求、命中规则或知识不足时交接；人工接管后停止自动回复</span></div>
+        <div class="item"><b>交接摘要</b><span class="txt">提供诉求、相关商品、已查信息与未解决事项，避免重复询问</span></div>
+      </div>
+    </div>
+    <div class="mod mt14" style="border-style:dashed">
+      <header><span class="dot" style="background:#b7b0a1"></span><h4>业务执行</h4><span class="tag ext">扩展</span></header>
+      <div class="item"><b>订单写入动作</b><span class="txt">改地址、退款、补偿、发券等动作另行设计权限、确认和结果回查，不默认包含</span></div>
+    </div>
+
+    <h3 class="mt28" style="font-size:17px;font-weight:800">业务回答边界：哪些能答，哪些必须转人工</h3>
+    <div class="bound mt14">
+      <div class="col can">
+        <h4>✓ AI 可以回答（依据审核资料）</h4>
+        <ul>
+          <li>规格、配料、储存、保质期等商品事实问题</li>
+          <li>活动的有效期、适用条件与优惠说明</li>
+          <li>已验证身份客户的订单与物流状态</li>
+          <li>已确认的退换货流程说明</li>
+        </ul>
+      </div>
+      <div class="col must">
+        <h4>→ 必须转人工（或使用审核口径）</h4>
+        <ul>
+          <li>涉及疾病、过敏、特殊人群判断或疗效承诺——按审核口径处理并转人工</li>
+          <li>超出授权的价格、赔付和到货时间——不作承诺</li>
+          <li>查询异常、身份不匹配或知识不足——说明情况并交接人工</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 05 场景一 ============ -->
+<section class="deck" id="s5">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">场景演示一：售前选购</h2></div>
+    <p class="sec-sub">第一次购买的客户不知道怎么选——AI 先了解需求，再依据审核过的商品资料给出有依据的比较，并引导查看对应商品。</p>
+    <div class="demos">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="bar">
+            <div class="ava">羊</div>
+            <div class="t"><b>羊奶官方旗舰店</b><span>AI 客服接待中</span></div>
+            <div class="st">● 在线</div>
+          </div>
+          <div class="chat">
+            <span class="sysline">今天 10:24</span>
+            <div class="msg right"><span class="who">客户</span>第一次买，哪一种比较合适？</div>
+            <div class="msg left"><span class="who">AI 助手</span>您好！为了方便推荐，先了解一个小问题：您更在意<b>口味、包装大小，还是价格</b>？告诉我最关心的一点，我帮您比较目前在售的产品。</div>
+            <div class="msg right"><span class="who">客户</span>想先买少一点试试，怕味道不习惯。</div>
+            <div class="msg left"><span class="who">AI 助手</span>明白。我为您筛选了在售的<b>小规格选项</b>，并整理了口味差异说明，您可以在商品页逐款对比。如果公司提供试用装，我也会优先推荐。</div>
+            <span class="sysline">AI 仅推荐审核资料内的商品，不编造规格与优惠</span>
+          </div>
+          <div class="inputbar"><div class="fake">请输入消息…</div><div class="send">➤</div></div>
+        </div>
+      </div>
+      <div class="demo-side">
+        <div class="ann">
+          <h5><span class="n">式</span>拟处理方式</h5>
+          <p>查询在售规格和审核过的口味描述，<strong>优先说明小规格选项及商品差异</strong>；只有公司确有试用装时才推荐试用装，不自行编造商品或优惠。</p>
+        </div>
+        <div class="ann">
+          <h5><span class="n">看</span>展示重点（演示时请看这三点）</h5>
+          <div class="chips">
+            <span class="c">追问是否必要、有节制</span>
+            <span class="c">比较是否有审核依据</span>
+            <span class="c">能否引导查看对应商品</span>
+          </div>
+        </div>
+        <div class="ann">
+          <h5><span class="n">注</span>说明</h5>
+          <p>以上为拟实现的业务示例；产品、价格、活动信息以公司审核资料为准，不代表旧 Agent 表现或已达成的效果。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 06 场景二 ============ -->
+<section class="deck" id="s6">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">场景演示二：订单查询</h2></div>
+    <p class="sec-sub">客户催单——AI 先验证身份，再实时查询订单与物流状态；查不到或接口异常时，说明情况并转人工，不让客户干等。</p>
+    <div class="demos">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="bar">
+            <div class="ava">羊</div>
+            <div class="t"><b>羊奶官方旗舰店</b><span>AI 客服接待中</span></div>
+            <div class="st">● 在线</div>
+          </div>
+          <div class="chat">
+            <span class="sysline">今天 14:05</span>
+            <div class="msg right"><span class="who">客户</span>昨天买的，怎么还没有收到？</div>
+            <div class="msg left"><span class="who">AI 助手</span>已为您查到这笔订单，当前状态是<span class="ph">【业务系统返回状态】</span>。最近更新为<span class="ph">【业务系统返回时间与记录】</span>。如需进一步核实，我可以为您转接客服。</div>
+            <div class="msg right"><span class="who">客户</span>帮我转人工吧。</div>
+            <div class="msg left"><span class="who">AI 助手</span>好的，正在为您转接人工客服，并附上本次沟通摘要，您无需重复描述。</div>
+            <span class="sysline">已转人工 · AI 停止自动回复</span>
+          </div>
+          <div class="inputbar"><div class="fake">请输入消息…</div><div class="send">➤</div></div>
+        </div>
+      </div>
+      <div class="demo-side">
+        <div class="ann">
+          <h5><span class="n">式</span>拟处理方式</h5>
+          <p>利用<strong>已验证的客户标识</strong>查找相关订单；存在多笔订单时请客户选择。按接口返回状态说明发货或物流进度；<strong>无法查询时说明情况并转人工</strong>。</p>
+        </div>
+        <div class="ann">
+          <h5><span class="n">看</span>展示重点（演示时请看这三点）</h5>
+          <div class="chips">
+            <span class="c">身份与订单是否匹配</span>
+            <span class="c">数据是否实时</span>
+            <span class="c">接口异常时是否正确兜底</span>
+          </div>
+        </div>
+        <div class="ann">
+          <h5><span class="n">注</span>说明</h5>
+          <p>方括号内容为业务系统返回值的占位示意；真实状态、时间以公司电商 / ERP 接口数据为准。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 07 运营端 ============ -->
+<section class="deck" id="s7">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">07</span><h2 class="sec-title">运营端：团队自己维护知识（含场景三演示）</h2></div>
+    <p class="sec-sub">运营端供客服主管和指定知识维护人员使用，优先复用平台原生功能；缺少的审批、版本与分析能力通过配置与轻量适配交付，不默认包含完整自研后台。</p>
+    <div class="grid g3">
+      <div class="mod">
+        <header><span class="dot"></span><h4>知识管理</h4><span class="tag">一期</span></header>
+        <div class="item"><b>资料导入</b><span class="txt">整理产品资料、常见问题和售后政策</span></div>
+        <div class="item"><b>分类与有效期</b><span class="txt">按商品、活动和业务类型组织，记录负责人及失效时间</span></div>
+        <div class="item"><b>问答维护</b><span class="txt">新增、更正和停用问答；冲突信息由业务负责人确认后发布</span></div>
+      </div>
+      <div class="mod">
+        <header><span class="dot"></span><h4>话术与流程</h4><span class="tag">一期</span></header>
+        <div class="item"><b>回复规则</b><span class="txt">配置称呼、语气、长度、追问方式和必转人工条件</span></div>
+        <div class="item"><b>场景配置</b><span class="txt">分别维护售前咨询、活动解释、订单服务等流程与查询调用</span></div>
+      </div>
+      <div class="mod">
+        <header><span class="dot"></span><h4>测试发布与复盘</h4><span class="tag">一期</span></header>
+        <div class="item"><b>场景测试</b><span class="txt">用历史问题和模拟多轮会话检查回答、查询及交接</span></div>
+        <div class="item"><b>变更记录</b><span class="txt">保留版本记录，更新前测试，必要时恢复上一已验收配置</span></div>
+        <div class="item"><b>问题归因 / 数据报告</b><span class="txt">记录转人工原因与错误类型；按约定口径输出报告</span></div>
+      </div>
+    </div>
+    <div class="mod mt14" style="border-style:dashed">
+      <header><span class="dot" style="background:#b7b0a1"></span><h4>知识沉淀</h4><span class="tag ext">扩展</span></header>
+      <div class="item"><b>问答建议</b><span class="txt">从授权历史会话中提炼候选问答，由业务人员审核后入库</span></div>
+    </div>
+
+    <h3 class="mt28" style="font-size:17px;font-weight:800">场景演示三：新活动上线，员工 30 分钟自主完成更新</h3>
+    <p class="small mt8" style="margin-bottom:16px">运营任务：公司推出一个新活动，指定员工更新适用商品、活动时间、优惠条件及不能叠加的规则——全程无需技术方介入。</p>
+    <div class="browser">
+      <div class="chrome">
+        <div class="dots"><i></i><i></i><i></i></div>
+        <div class="url">agent.<span style="color:#b56a1c">yourcompany</span>.cn / 运营后台 / 活动规则配置</div>
+      </div>
+      <div class="admin">
+        <div class="side">
+          <div class="mi"><span class="ic">📚</span>知识库</div>
+          <div class="mi on"><span class="ic">🎯</span>活动规则</div>
+          <div class="mi"><span class="ic">💬</span>话术规则</div>
+          <div class="mi"><span class="ic">🧪</span>测试发布</div>
+          <div class="mi"><span class="ic">📈</span>数据报告</div>
+        </div>
+        <div class="main">
+          <h4>新品试饮节 · 规则配置</h4>
+          <div class="crumb">草稿 ID ACT-2026-114 · 上次保存 2 分钟前 · 维护人：运营-小钟</div>
+          <div class="frm">
+            <div class="f"><label>适用商品</label><div class="v"><span class="pill">羊奶 3 段配方粉 400g</span><span class="pill">羊奶 2 段配方粉 800g</span></div></div>
+            <div class="f"><label>活动时间</label><div class="v">2026-11-01 ～ 2026-11-15（到期自动停推）</div></div>
+            <div class="f"><label>优惠条件</label><div class="v">满 2 盒减 20 元</div></div>
+            <div class="f"><label>不可叠加规则</label><div class="v">不可与会员券叠加使用</div></div>
+          </div>
+          <div class="btns"><span class="btn">保存草稿</span><span class="btn">提交测试</span></div>
+          <div class="testbox">
+            <div class="tt">🧪 测试环境验证（发布前必跑）</div>
+            <div class="tr"><span class="ok">✓</span>活动内问法："有满减吗？" → 正确应答满 2 盒减 20</div>
+            <div class="tr"><span class="ok">✓</span>活动外问法："过期活动还能用吗？" → 正确拒答并推荐在售活动</div>
+            <div class="tr"><span class="ok">✓</span>边界问法："能叠加会员券吗？" → 正确说明不可叠加</div>
+          </div>
+          <div class="pubbar"><span>👤 客服主管审核：<b>已通过</b></span><span class="btn pri go">发布生效</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid g3 mt14">
+      <div class="card"><b style="font-size:13.5px">👥 员工独立完成</b><p class="small mt8">上新产品或活动、修正错误回答并发布，由指定员工独立操作</p></div>
+      <div class="card"><b style="font-size:13.5px">🧪 先测后发</b><p class="small mt8">验证活动内外、满足与不满足条件的问法，主管审核后才发布</p></div>
+      <div class="card"><b style="font-size:13.5px">🕘 可追溯可撤回</b><p class="small mt8">每次修正保留记录，可追踪并撤回一次错误变更；过期活动不继续推荐</p></div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 08 管理端 ============ -->
+<section class="deck" id="s8">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">08</span><h2 class="sec-title">管理端与部署：可控、可查、可移交</h2></div>
+    <p class="sec-sub">建议以可自部署的 Agent 平台承载知识与流程；平台选型与模型调用方案在试点中确定，部署于公司控制的环境，配置和定制成果按约定移交。</p>
+    <div class="grid g4">
+      <div class="mod"><header><span class="dot"></span><h4>模型配置</h4><span class="tag">一期</span></header>
+        <div class="item"><b>模型与密钥</b><span class="txt">配置主用模型及调用额度；公司持有业务账号，密钥由管理员管理</span></div></div>
+      <div class="mod"><header><span class="dot"></span><h4>接入管理</h4><span class="tag">一期</span></header>
+        <div class="item"><b>消息适配</b><span class="txt">沿用已跑通的客服接入方式，适配消息、会话标识、回复和交接状态</span></div></div>
+      <div class="mod"><header><span class="dot"></span><h4>工具管理</h4><span class="tag">一期</span></header>
+        <div class="item"><b>业务查询</b><span class="txt">封装约定的电商或 ERP 查询接口，校验客户身份与查询权限</span></div></div>
+      <div class="mod"><header><span class="dot"></span><h4>运行管理</h4><span class="tag">一期</span></header>
+        <div class="item"><b>异常处理</b><span class="txt">超时、失败兜底和重复消息处理；异常时转人工，保留日志</span></div>
+        <div class="item"><b>记录与备份</b><span class="txt">保存调用及发布记录，配置备份，提供恢复演练</span></div></div>
+      <div class="mod"><header><span class="dot"></span><h4>权限管理</h4><span class="tag">一期</span></header>
+        <div class="item"><b>角色分工</b><span class="txt">区分技术管理、业务审核及日常维护职责</span></div></div>
+      <div class="mod"><header><span class="dot"></span><h4>成本管理</h4><span class="tag">一期</span></header>
+        <div class="item"><b>用量追踪</b><span class="txt">记录模型调用量、费用和限额，按月复盘成本</span></div></div>
+      <div class="mod" style="border-style:dashed"><header><span class="dot" style="background:#b7b0a1"></span><h4>可用性扩展</h4><span class="tag ext">扩展</span></header>
+        <div class="item"><b>高可用部署</b><span class="txt">多节点、自动故障切换和全天候响应保障按业务规模另行报价</span></div></div>
+      <div class="mod"><header><span class="dot"></span><h4>现有配置复用</h4><span class="tag ai">评估项</span></header>
+        <div class="item"><b>能复用则复用</b><span class="txt">公司有可导出配置和权限的，评估后复用；无法取得的，基于公司资料重建</span></div></div>
+    </div>
+    <div class="card mt20" style="background:var(--ai-bg);border-color:#cfe0ee">
+      <p style="font-size:14px;color:#2c4f66"><strong>可控性承诺：</strong>部署于公司控制的环境 · 密钥由公司管理员管理 · 调用量与费用按月复盘 · 记录备份并可演练恢复 · 实施过程同步完成知识整理、流程配置与运营移交。</p>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 09 实施计划 ============ -->
+<section class="deck" id="s9">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">09</span><h2 class="sec-title">实施计划：4–6 周，四步走</h2></div>
+    <p class="sec-sub">自资料和访问权限齐备后计算；实际工期随商品资料质量、业务查询复杂度及双方反馈速度调整。</p>
+    <div class="tl">
+      <div class="ph"><span class="wk">第 1 周</span><h4>诊断与范围确认</h4>
+        <p>复盘历史会话，选定场景，梳理资料；定义测试集与效果口径。</p>
+        <div class="out"><b>阶段成果</b>范围清单 · 知识目录 · 基线与测试集</div></div>
+      <div class="ph"><span class="wk">第 2–3 周</span><h4>配置与集成</h4>
+        <p>部署平台，配置知识与流程，完成约定查询及客服消息适配。</p>
+        <div class="out"><b>阶段成果</b>可测试 Agent · 业务查询与交接流程</div></div>
+      <div class="ph"><span class="wk">第 4 周</span><h4>验证与试运行</h4>
+        <p>用保留样本验证；先辅助回复，再逐步开放自动接待；保留回退入口。</p>
+        <div class="out"><b>阶段成果</b>测试报告 · 问题修正 · 试点结论</div></div>
+      <div class="ph"><span class="wk">第 5–6 周</span><h4>推广与移交</h4>
+        <p>按试点结论扩大约定范围，完成培训、备份恢复演练及资料移交。</p>
+        <div class="out"><b>阶段成果</b>正式配置 · 操作手册 · 培训录屏 · 验收记录</div></div>
+    </div>
+    <div class="card mt20">
+      <p style="font-size:13.5px;color:#4c463c"><strong>双方投入：</strong>实施方负责技术实施、配置优化、测试报告和培训；公司负责提供获授权的历史会话、产品与活动资料，安排业务审核及现有系统技术对接。<strong>业务口径由公司确认后发布。</strong></p>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 10 培训 ============ -->
+<section class="deck" id="s10">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">10</span><h2 class="sec-title">培训与实操验收：教会团队自己走路</h2></div>
+    <p class="sec-sub">培训的目标是"独立完成实操任务"，每人只学自己角色需要的部分。</p>
+    <div class="grid g3">
+      <div class="mx"><h4>👩‍💼 一线客服</h4><p>接管会话、查看摘要、标记错误</p><div class="how"><b>独立任务：</b>处理一次人工交接并提交有效反馈</div></div>
+      <div class="mx"><h4>🧑‍💻 运营与主管</h4><p>知识维护、规则调整、测试发布</p><div class="how"><b>独立任务：</b>上新产品或活动，修正错误回答并发布</div></div>
+      <div class="mx"><h4>🛠 技术管理人员</h4><p>模型配置、日志、备份与故障处理</p><div class="how"><b>独立任务：</b>找到一次失败原因并完成配置恢复演练</div></div>
+    </div>
+    <div class="grid g4 mt20">
+      <div class="card" style="text-align:center"><div style="font-size:24px">📅</div><b style="font-size:14px">3 次实操培训</b><p class="small mt8">每次约 90 分钟，讲练结合</p></div>
+      <div class="card" style="text-align:center"><div style="font-size:24px">🎬</div><b style="font-size:14px">录屏 + 操作手册</b><p class="small mt8">课后可回看，新人也能上手</p></div>
+      <div class="card" style="text-align:center"><div style="font-size:24px">👤</div><b style="font-size:14px">指定 2 个角色</b><p class="small mt8">至少 1 名客服主管 + 1 名日常维护人员（可兼任）</p></div>
+      <div class="card" style="text-align:center"><div style="font-size:24px">🤝</div><b style="font-size:14px">上线后 30 天陪跑</b><p class="small mt8">约定频次的复盘与问题修正</p></div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 11 验收与费用 ============ -->
+<section class="deck" id="s11">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">11</span><h2 class="sec-title">验收与收益评估：用数据决定去留</h2></div>
+    <p class="sec-sub">先确定比较口径，再衡量是否改善。试点结束后，双方依据测试报告、人工接待反馈和实际调用成本，决定扩大范围、继续优化或暂停替换；正式切换前保留原接待流程的回退方案。</p>
+    <div class="card" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <b style="font-size:13.5px;margin-right:6px">测试样本设计：</b>
+      <span class="tag">≥ 200 条覆盖主要场景</span>
+      <span class="tag">≥ 20% 保留到验收时使用</span>
+      <span class="tag">人工按标准标注</span>
+      <span class="tag warn">客户离开或机器人停答 ≠ 已解决</span>
+    </div>
+    <div class="grid g3 mt20">
+      <div class="mx"><h4>回答正确性 <span class="lv">目标 ≥ 90%</span></h4><p>事实、商品匹配及规则适用均正确才记为通过</p><div class="how">首轮建议目标为验收样本 ≥90%，启动时确认</div></div>
+      <div class="mx"><h4>交接与关键边界 <span class="lv">全部通过</span></h4><p>主动要求人工、必转规则、人工接管停答及越权查询</p><div class="how">约定关键测试用例全部通过</div></div>
+      <div class="mx"><h4>独立解决率 <span class="lv">同口径比较</span></h4><p>AI 独立解决且约定观察窗口内未重复求助的会话占比</p><div class="how">与旧 Agent 同口径比较，目标在基线确认后约定</div></div>
+      <div class="mx"><h4>人工工作量 <span class="lv">对比观测</span></h4><p>同类会话的人工处理时长与人工介入量</p><div class="how">按相近渠道和业务结构比较</div></div>
+      <div class="mx"><h4>咨询成交表现 <span class="lv">上线观察</span></h4><p>固定归因窗口内的成交客户数占有效咨询客户数</p><div class="how">上线后观察；具备条件时进行同期分组对比</div></div>
+      <div class="mx"><h4>团队接手能力 <span class="lv">实操通过</span></h4><p>资料更新、测试发布、问题定位及恢复操作</p><div class="how">指定人员独立完成约定实操任务</div></div>
+    </div>
+
+    <h3 class="mt28" style="font-size:17px;font-weight:800">费用比较方法：怎么算账才公平</h3>
+    <div class="formula">
+      <div class="f1">首年现金节省 <span class="op">＝</span> 旧方案可取消费用 <span class="op">－</span> 新方案首年费用</div>
+      <div class="f2">新方案首年费用 ＝
+        <span class="it">实施与培训费</span>＋<span class="it">服务器费</span>＋<span class="it">模型调用费</span>＋<span class="it">维护费</span>＋<span class="it">必要的商业授权费</span>
+      </div>
+      <div class="warnline">⚠️ 旧方案基准以实际可取消的 Agent 费用为准——现有方案约 9 万元年费如同时包含客服系统或其他服务，应先拆分，不直接全部视为节省。节省的客服工时应单列为效率收益；只有确实减少支出或避免新增招聘时，才计入现金收益。</div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 12 合作方式 ============ -->
+<section class="deck" id="s12">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">12</span><h2 class="sec-title">合作方式与下一步</h2></div>
+    <p class="sec-sub">采用"付费试点＋正式实施＋可选维护"分阶段合作，每一阶段都有明确交付物，风险可控。</p>
+    <div class="stage">
+      <div class="s"><span class="no">第一步</span><h4>付费试点</h4><p>限定场景配置、测试与效果评估。按确认范围一次性报价。</p></div>
+      <div class="s"><span class="no">第二步</span><h4>正式实施及培训</h4><p>完整约定功能、上线、资料移交及培训。按功能清单和接口工作量报价。</p></div>
+      <div class="s"><span class="no">第三步</span><h4>可选维护</h4><p>故障处理、版本维护及约定优化。可选服务，明确时段与响应约定。</p></div>
+    </div>
+    <div class="grid g2 mt28">
+      <div class="card">
+        <b style="font-size:14.5px">📦 公司获得的交付物</b>
+        <p class="small mt8">约定范围内的知识资料、流程配置、定制代码和部署文档；第三方软件遵循各自许可。运行费用（模型 API、服务器及必要授权）由公司账号直接支付或透明列示。</p>
+      </div>
+      <div class="card">
+        <b style="font-size:14.5px">🚫 一期不默认包含</b>
+        <p class="small mt8">企业级保障、额外渠道、语音、多媒体和订单写入动作不自动包含在一期范围内，如需请单独评估报价。</p>
+      </div>
+    </div>
+    <div class="cta mt28">
+      <h4>下一步：确认试点范围，即可启动</h4>
+      <p>试点完成后交付配置成果、测试报告和正式实施范围；是否抵扣后续费用、各阶段价格及付款节点，在报价单中明确。</p>
+      <div class="chips2">
+        <span>① 一条现有接待入口</span><span>② 一个业务范围</span><span>③ 三类高频场景</span><span>④ 商品范围与接口数量（启动时确认）</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>智能客服 Agent 产品介绍</b> · 业务方案与功能清单 · 2026 年 10 月</p>
+    <p class="disc">本文件为拟交付方案：功能、周期和验收建议用于范围讨论，最终以双方确认的交付清单为准；文中的场景示例不是已上线演示或实测效果。产品、价格、活动和订单信息应替换为公司审核资料。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var pg=document.getElementById('pg');
+  function onScroll(){
+    var h=document.documentElement;
+    var p=h.scrollTop/(h.scrollHeight-h.clientHeight);
+    pg.style.width=(p*100)+'%';
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>
